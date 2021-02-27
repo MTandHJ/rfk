@@ -30,7 +30,7 @@ parser.add_argument("-beta2", "--beta2", type=float, default=0.999,
 parser.add_argument("-wd", "--weight_decay", type=float, default=2e-4,
                 help="weight decay")
 parser.add_argument("-lr", "--lr", "--LR", "--learning_rate", type=float, default=0.1)
-parser.add_argument("-lp", "--learning_policy", type=str, default="default", 
+parser.add_argument("-lp", "--learning_policy", type=str, default="STD", 
                 help="learning rate schedule defined in config.py")
 parser.add_argument("--epochs", type=int, default=200)
 parser.add_argument("-b", "--batch_size", type=int, default=128)

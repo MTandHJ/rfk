@@ -17,11 +17,3 @@ def kl_divergence(logits, targets, reduction="batchmean"):
     inputs = F.log_softmax(logits, dim=-1)
     targets = F.softmax(targets, dim=-1)
     return F.kl_div(inputs, targets, reduction=reduction)
-
-def contrastive_loss(outs: torch.Tensor, reduction="mean"):
-    n = outs.size(0) // 2
-    logits = (outs @ outs.T).fill_diagonal_(-1e10)
-    labels = torch.arange(n, 3*n, dtype=torch.long, device=logits.device) % (2 * n)
-    return cross_entropy(logits, labels, reduction=reduction)
-
-

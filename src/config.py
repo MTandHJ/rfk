@@ -118,6 +118,15 @@ LEARNING_POLICY = {
         "Default leaning policy will be applied: " \
         "decay the learning rate at 100 and 105 epochs by a factor 10."
     ),
+    "STD": (
+        "MultiStepLR",
+        Config(
+            milestones=[82, 123],
+            gamma=0.1
+        ),
+        "STD leaning policy will be applied: " \
+        "decay the learning rate at 82 and 123 epochs by a factor 10."
+    ),
     "AT":(
         "MultiStepLR",
         Config(

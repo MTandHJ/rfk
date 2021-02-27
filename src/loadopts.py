@@ -64,9 +64,7 @@ def load_model(model_type: str):
 def load_loss_func(loss_type: str):
     """
     cross_entropy: the softmax cross entropy loss
-    contrastive: contrastive loss
     kl_loss: kl divergence
-    margin_loss: the loss used for capsule with agreement routing
     """
     if loss_type == "cross_entropy":
         from .loss_zoo import cross_entropy
@@ -241,6 +239,7 @@ def load_learning_policy(
 ):
     """
     default: (100, 105), 110 epochs
+    STD: (82, 123), 200 epochs
     AT: (102, 154), 200 epochs
     TRADES: (75, 90, 100), 76 epochs
     cosine: CosineAnnealingLR, kwargs: T_max, eta_min, last_epoch
