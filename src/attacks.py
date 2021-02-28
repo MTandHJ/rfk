@@ -5,7 +5,6 @@
 import torch
 import eagerpy as ep
 from foolbox.attacks import LinfProjectedGradientDescentAttack
-from .loss_zoo import cross_entropy, contrastive_loss
 
 
 class LinfPGDKLDiv(LinfProjectedGradientDescentAttack):

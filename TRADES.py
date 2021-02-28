@@ -9,7 +9,7 @@ from src.loadopts import *
 
 
 
-METHOD = "Trades"
+METHOD = "TRADES"
 SAVE_FREQ = 20
 FMT = "{description}={leverage}={learning_policy}-{optimizer}-{lr}" \
         "={attack}-{epsilon:.4f}-{stepsize}-{steps}" \

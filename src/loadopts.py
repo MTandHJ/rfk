@@ -289,9 +289,9 @@ def _attack(attack_type: str, stepsize: float, steps: int):
     sparse-l1: rel_stepsize=stepsize, steps=steps;
     deepfool-linf: \ell_{\infty} version, overshoot=stepsize, steps=steps;
     deepfool-l2: \ell_2 version;
-    bb-inf: \ell_{infty} version, lr=stepsize, steps=steps, overshott=1.1;
-    bb-l1: \ell_1 version;
-    bb-l2: \ell_2 version
+    bba-inf: \ell_{infty} version, lr=stepsize, steps=steps, overshott=1.1;
+    bba-l1: \ell_1 version;
+    bba-l2: \ell_2 version
     """
     if attack_type == "pgd-linf":
         attack = fb.attacks.LinfPGD(
@@ -343,17 +343,17 @@ def _attack(attack_type: str, stepsize: float, steps: int):
             overshoot=stepsize,
             steps=steps
         )
-    elif attack_type == "bb-inf":
+    elif attack_type == "bba-inf":
         attack = fb.attacks.LinfinityBrendelBethgeAttack(
             lr=stepsize,
             steps=steps
         )
-    elif attack_type == "bb-l2":
+    elif attack_type == "bba-l2":
         attack = fb.attacks.L2BrendelBethgeAttack(
             lr=stepsize,
             steps=steps
         )
-    elif attack_type == "bb-l1":
+    elif attack_type == "bba-l1":
         attack = fb.attacks.L1BrendelBethgeAttack(
             lr=stepsize,
             steps=steps

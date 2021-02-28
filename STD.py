@@ -32,7 +32,7 @@ parser.add_argument("-wd", "--weight_decay", type=float, default=2e-4,
 parser.add_argument("-lr", "--lr", "--LR", "--learning_rate", type=float, default=0.1)
 parser.add_argument("-lp", "--learning_policy", type=str, default="STD", 
                 help="learning rate schedule defined in config.py")
-parser.add_argument("--epochs", type=int, default=200)
+parser.add_argument("--epochs", type=int, default=164)
 parser.add_argument("-b", "--batch_size", type=int, default=128)
 parser.add_argument("--transform", type=str, default='default', 
                 help="the data augmentation which will be applied during training.")

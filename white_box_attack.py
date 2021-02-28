@@ -18,7 +18,7 @@ parser.add_argument("info_path", type=str)
 parser.add_argument("--attack", type=str, default="pgd-linf")
 parser.add_argument("--epsilon_min", type=float, default=0.)
 parser.add_argument("--epsilon_max", type=float, default=1.)
-parser.add_argument("--epsilon_times", type=int, default=20)
+parser.add_argument("--epsilon_times", type=int, default=1)
 parser.add_argument("--stepsize", type=float, default=0.1, 
                     help="pgd:rel_stepsize, cwl2:step_size, deepfool:overshoot, bb:lr")
 parser.add_argument("--steps", type=int, default=20)
