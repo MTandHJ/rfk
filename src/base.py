@@ -3,8 +3,6 @@
 
 import torch
 import torch.nn as nn
-import os
-os.environ['GIT_PYTHON_REFRESH'] = 'quiet'
 import foolbox as fb
 import eagerpy as ep
 from models.base import AdversarialDefensiveModel
@@ -73,7 +71,7 @@ class Coach:
             self.acc.update(accuracy_count, inputs.size(0), mode="sum")
 
         self.progress.display(epoch=epoch) 
-        self.learning_policy.step() # update learning rate
+        self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
     def adv_train(self, trainloader, attacker, *, epoch=8888):
