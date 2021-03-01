@@ -16,7 +16,7 @@ parser.add_argument("info_path", type=str)
 
 # adversarial settings
 parser.add_argument("--attack", type=str, default="pgd-linf")
-parser.add_argument("--epsilon_min", type=float, default=0.)
+parser.add_argument("--epsilon_min", type=float, default=8/255)
 parser.add_argument("--epsilon_max", type=float, default=1.)
 parser.add_argument("--epsilon_times", type=int, default=1)
 parser.add_argument("--stepsize", type=float, default=0.1, 

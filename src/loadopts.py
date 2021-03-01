@@ -35,12 +35,14 @@ def load_model(model_type: str):
     mnist: the model designed for MNIST dataset
     cifar: the model designed for CIFAR dataset
     resnet20|32|44|110|1202
+    resnet18|34|50|101|50_32x4d
     wrn-28-10: depth-28, width-10
     wrn-34-10: depth-34, width-10
     wrn-34-20: depth-34, width-20
     """
     resnets = ['resnet20', 'resnet32', 'resnet44', 
                 'resnet56', 'resnet110', 'resnet1202']
+    srns = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnext50_32x4d']
     wrns = ['wrn-28-10', 'wrn-34-10', 'wrn-34-20']
 
     if model_type == "mnist":
@@ -52,6 +54,9 @@ def load_model(model_type: str):
     elif model_type in resnets:
         import models.resnet as resnet
         model = getattr(resnet, model_type)
+    elif model_type in srns:
+        import models.cifar_resnet as srn
+        model = getattr(srn, model_type)
     elif model_type in wrns:
         import models.wide_resnet as wrn
         model = getattr(wrn, model_type)
@@ -343,7 +348,7 @@ def _attack(attack_type: str, stepsize: float, steps: int):
             overshoot=stepsize,
             steps=steps
         )
-    elif attack_type == "bba-inf":
+    elif attack_type == "bba-linf":
         attack = fb.attacks.LinfinityBrendelBethgeAttack(
             lr=stepsize,
             steps=steps
