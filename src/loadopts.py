@@ -243,10 +243,12 @@ def load_learning_policy(
     **kwargs
 ):
     """
-    default: (100, 105), 110 epochs
-    STD: (82, 123), 200 epochs
-    AT: (102, 154), 200 epochs
-    TRADES: (75, 90, 100), 76 epochs
+    default: (100, 105), 110 epochs suggested
+    null:
+    STD: (82, 123), 200 epochs suggested
+    AT: (102, 154), 200 epochs suggested
+    TRADES: (75, 90, 100), 76 epochs suggested
+    TRADES-M: (55, 75, 90), 100 epochs suggested
     cosine: CosineAnnealingLR, kwargs: T_max, eta_min, last_epoch
     """
     try:
