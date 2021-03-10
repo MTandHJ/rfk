@@ -50,7 +50,7 @@ def load_cfg():
     device = gpu(model)
     load(
         model=model, 
-        filename=opts.info_path + "/paras.pt", 
+        path=opts.info_path,
         device=device
     )
 
