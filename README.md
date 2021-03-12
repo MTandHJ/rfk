@@ -187,15 +187,15 @@ $\epsilon=16/255$ is also a usual choice.
 | $\epsilon$ |    -     |    -    |   0    |  0.5   | 0.5  |  0.5  |   0.5    |   0.5   |
 | :--------: | :------: | :----: | :----: | :--: | :---: | :------: | :------: | :------: |
 |   Method   |   Net    |   LP   | TA(%)  | PGD-50 |  AA  |  C&W  | DeepFool | BBA |
-|    STD     | ResNet32 | STD | 93.270 | 0.010 |      | 0.000 |          | - |
+|    STD     | ResNet32 | STD | 93.270 | 0.010 |      | 0.000 | 0.660 | - |
 |     AT     | ResNet32 | AT | 79.420 | 56.700 |       |   54.670    |  58.480  |  -  |
-|   TRADES   | ResNet32 | TRADES | 74.470 |        |      | 0.000 |          | - |
-| STD | ResNet18 | STD | 95.280 | | | | | - |
+|   TRADES   | ResNet32 | TRADES | 74.470 |        |      | 51.480 |          | - |
+| STD | ResNet18 | STD | 95.280 | | | | 0.020 | - |
 | AT | ResNet18 | AT | 84.780 | | 53.800 | 54.900 | | - |
-| TRADES | ResNet18 | TRADES | 81.110 | | | | | - |
-| STD | cifar | STD | 91.560 | | | | | - |
-| AT | cifar | AT | 76.260 | | | | | - |
-| TRADES | cifar | TRADES | 72.960 | | | | | - |
+| TRADES | ResNet18 | TRADES | 81.110 | 58.860 | |  | 61.890 | - |
+| STD | cifar | STD | 91.560 | 0.060 | | 0.030 | 1.140 | - |
+| AT | cifar | AT | 76.260 | 58.180 | | 55.750 | 57.780 | - |
+| TRADES | cifar | TRADES | 72.960 | 55.560 | | 52.350 | 54.450 | - |
 
 
 
