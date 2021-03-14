@@ -36,14 +36,14 @@ def load_model(model_type: str):
     cifar: the model designed for CIFAR dataset
     resnet20|32|44|110|1202
     resnet18|34|50|101|50_32x4d
-    wrn-28-10: depth-28, width-10
-    wrn-34-10: depth-34, width-10
-    wrn-34-20: depth-34, width-20
+    wrn_28_10: depth-28, width-10
+    wrn_34_10: depth-34, width-10
+    wrn_34_20: depth-34, width-20
     """
     resnets = ['resnet20', 'resnet32', 'resnet44', 
                 'resnet56', 'resnet110', 'resnet1202']
     srns = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnext50_32x4d']
-    wrns = ['wrn-28-10', 'wrn-34-10', 'wrn-34-20']
+    wrns = ['wrn_28_10', 'wrn_34_10', 'wrn_34_20']
 
     if model_type == "mnist":
         from models.mnist import MNIST

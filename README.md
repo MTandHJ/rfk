@@ -187,14 +187,14 @@ $\epsilon=16/255$ is also a usual choice.
 | $\epsilon$ |    -     |    -    |   0    |  0.5   | 0.5  |  0.5  |   0.5    |   0.5   |
 | :--------: | :------: | :----: | :----: | :--: | :---: | :------: | :------: | :------: |
 |   Method   |   Net    |   LP   | TA(%)  | PGD-50 |  AA  |  C&W  | DeepFool | BBA |
-|    STD     | ResNet32 | STD | 93.270 | 0.010 |      | 0.000 | 0.660 | - |
-|     AT     | ResNet32 | AT | 79.420 | 56.700 |       |   54.670    |  58.480  |  -  |
-|   TRADES   | ResNet32 | TRADES | 74.470 |        |      | 51.480 |          | - |
-| STD | ResNet18 | STD | 95.280 | | | | 0.020 | - |
-| AT | ResNet18 | AT | 84.780 | | 53.800 | 54.900 | | - |
-| TRADES | ResNet18 | TRADES | 81.110 | 58.860 | |  | 61.890 | - |
-| STD | cifar | STD | 91.560 | 0.060 | | 0.030 | 1.140 | - |
-| AT | cifar | AT | 76.260 | 58.180 | | 55.750 | 57.780 | - |
+|    STD     | ResNet32 | STD | 93.270 | 0.010 | 0.000 | 0.000 | 0.660 | - |
+|     AT     | ResNet32 | AT | 79.420 | 56.700 | 53.310 |   54.670    |  58.480  |  -  |
+|   TRADES   | ResNet32 | TRADES | 74.470 | 54.340 | 50.950 | 51.480 | 54.870 | - |
+| STD | ResNet18 | STD | 95.280 | 0.340 | 0.000 | 0.030 | 13.860 | - |
+| AT | ResNet18 | AT | 84.780 | 54.970 | 53.800 | 54.920 | 60.530 | - |
+| TRADES | ResNet18 | TRADES | 81.110 | 58.860 | 55.600 | 56.160 | 61.890 | - |
+| STD | cifar | STD | 91.560 | 0.060 | 0.000 | 0.030 | 1.140 | - |
+| AT | cifar | AT | 76.260 | 58.180 | 54.850 | 55.750 | 57.780 | - |
 | TRADES | cifar | TRADES | 72.960 | 55.560 | | 52.350 | 54.450 | - |
 
 
@@ -206,15 +206,15 @@ $\epsilon=16/255$ is also a usual choice.
 | $\epsilon$ |    -     |   -    |   0    |   12   |   12   |
 | :--------: | :------: | :----: | :----: | :----: | :----: |
 |   Method   |   Net    |   LP   | TA(%)  | PGD-50 | Sparse |
-|    STD     | ResNet32 |  STD   | 93.270 |        |        |
-|     AT     | ResNet32 |   AT   | 79.420 |        |        |
-|   TRADES   | ResNet32 | TRADES | 74.470 |        |        |
-|    STD     | ResNet18 |  STD   | 95.280 |        |        |
-|     AT     | ResNet18 |   AT   | 84.780 |        |        |
-|   TRADES   | ResNet18 | TRADES | 81.110 |        |        |
-|    STD     |  cifar   |  STD   | 91.560 |        |        |
-|     AT     |  cifar   |   AT   | 76.260 |        |        |
-|   TRADES   |  cifar   | TRADES | 72.960 |        |        |
+|    STD     | ResNet32 |  STD   | 93.270 | 0.620  | 0.690  |
+|     AT     | ResNet32 |   AT   | 79.420 | 57.250 | 23.080 |
+|   TRADES   | ResNet32 | TRADES | 74.470 | 54.870 | 24.750 |
+|    STD     | ResNet18 |  STD   | 95.280 | 6.600  | 3.210  |
+|     AT     | ResNet18 |   AT   | 84.780 | 55.380 | 21.360 |
+|   TRADES   | ResNet18 | TRADES | 81.110 | 58.500 | 28.040 |
+|    STD     |  cifar   |  STD   | 91.560 | 1.890  | 0.080  |
+|     AT     |  cifar   |   AT   | 76.260 | 61.110 | 26.350 |
+|   TRADES   |  cifar   | TRADES | 72.960 | 58.250 | 27.640 |
 
 
 
