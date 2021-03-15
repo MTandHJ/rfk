@@ -8,9 +8,9 @@ import numpy as np
 import random
 import os
 import sys
+from .config import SAVED_FILENAME
 
 
-SAVED_FILENAME = "paras.pt"
 
 class AverageMeter:
 
