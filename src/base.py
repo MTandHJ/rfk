@@ -184,12 +184,24 @@ class Adversary:
         self.epsilon = epsilon
         self.attacker = attacker 
 
-    @enter_attack_exit
     def attack(self, inputs, criterion, epsilon=None):
         if epsilon is None:
             epsilon = self.epsilon
         self.model.eval() # make sure in evaluating mode ...
         return self.attacker(self.fmodel, inputs, criterion, epsilons=epsilon)
+
+    def __call__(self, inputs, criterion, epsilon=None):
+    return self.attack(inputs, criterion, epsilon)
+
+
+class AdversaryForTrain(Adversary):
+
+    @enter_attack_exit
+    def attack(self, inputs, criterion, epsilon=None):
+        return super(AdversaryForTrain, self).attack(inputs, criterion, epsilon)
+
+
+class AdversaryForValid(Adversary): 
 
     @torch.no_grad()
     def accuracy(self, inputs, labels):
@@ -215,9 +227,6 @@ class Adversary:
             running_accuracy += self.accuracy(inputs, labels)
             running_success += self.success(inputs, labels, epsilon)
         return running_accuracy / datasize, running_success / datasize
-
-    def __call__(self, inputs, criterion, epsilon=None):
-        return self.attack(inputs, criterion, epsilon)
 
 
 

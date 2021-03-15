@@ -6,7 +6,7 @@ import foolbox as fb
 from tqdm import tqdm
 
 
-from .base import Adversary
+from .base import AdversaryForValid
 from .dict2obj import Config
 from .config import *
 
@@ -381,7 +381,7 @@ def load_attacks(attack_type: str, dataset_type: str, stepsize: float, steps: in
 def load_valider(model: torch.nn.Module, device, dataset_type: str):
     cfg, epsilon = VALIDER[dataset_type]
     attack, bounds, preprocessing = load_attacks(dataset_type=dataset_type, **cfg)
-    valider = Adversary(
+    valider = AdversaryForValid(
         model, attack, device, 
         bounds, preprocessing, epsilon
     )

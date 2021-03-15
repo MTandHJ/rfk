@@ -56,7 +56,7 @@ opts.description = FMT.format(**opts.__dict__)
 
 def load_cfg():
     from src.dict2obj import Config
-    from src.base import Coach, Adversary
+    from src.base import Coach, AdversaryForTrain
     from src.utils import gpu, set_seed, load_checkpoint
 
     cfg = Config()
@@ -129,7 +129,7 @@ def load_cfg():
         stepsize=opts.stepsize, steps=opts.steps
     )
 
-    cfg['attacker'] = Adversary(
+    cfg['attacker'] = AdversaryForTrain(
         model=model, attacker=attack, device=device, 
         bounds=bounds, preprocessing=preprocessing, epsilon=opts.epsilon
     )
