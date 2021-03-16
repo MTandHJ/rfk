@@ -191,7 +191,7 @@ class Adversary:
         return self.attacker(self.fmodel, inputs, criterion, epsilons=epsilon)
 
     def __call__(self, inputs, criterion, epsilon=None):
-    return self.attack(inputs, criterion, epsilon)
+        return self.attack(inputs, criterion, epsilon)
 
 
 class AdversaryForTrain(Adversary):
