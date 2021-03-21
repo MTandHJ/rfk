@@ -3,6 +3,7 @@
 
 
 
+from typing import Any
 
 # Convert the dict to a object.
 
@@ -43,7 +44,7 @@ class Config(dict):
         for name, attr in self.items():
             self.__setattr__(name, attr)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any) -> None:
         super(Config, self).__setitem__(key, value)
         self.__setattr__(key, value)
 

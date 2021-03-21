@@ -1,4 +1,5 @@
 
+from typing import TypeVar, Callable, Optional, Tuple, Dict
 import torch
 import torchvision
 import torchvision.transforms as T
@@ -20,7 +21,7 @@ class DatasetNotIncludeError(Exception): pass
 
 
 # return the num_classes of corresponding data set
-def get_num_classes(dataset_type: str):
+def get_num_classes(dataset_type: str) -> int:
     if dataset_type in ('mnist', 'cifar10'):
         return 10
     elif dataset_type in ('cifar100', ):
@@ -30,7 +31,7 @@ def get_num_classes(dataset_type: str):
                         "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
 
 
-def load_model(model_type: str):
+def load_model(model_type: str) -> Callable[..., torch.nn.Module]:
     """
     mnist: the model designed for MNIST dataset
     cifar: the model designed for CIFAR dataset
@@ -66,7 +67,7 @@ def load_model(model_type: str):
     return model
 
 
-def load_loss_func(loss_type: str):
+def load_loss_func(loss_type: str) -> Callable:
     """
     cross_entropy: the softmax cross entropy loss
     kl_loss: kl divergence
@@ -91,7 +92,11 @@ def load_loss_func(loss_type: str):
 
 class _Normalize:
 
-    def __init__(self, mean=None, std=None):
+    def __init__(
+        self, 
+        mean: Optional[Tuple]=None, 
+        std: Optional[Tuple]=None
+    ):
         self.set_normalizer(mean, std)
 
     def set_normalizer(self, mean, std):
@@ -108,7 +113,7 @@ class _Normalize:
             mean=-mean/std, std=1/std
         )
 
-    def _normalize(self, imgs, inv):
+    def _normalize(self, imgs: torch.Tensor, inv: bool) -> torch.Tensor:
         if not self.flag:
             return imgs
         if inv:
@@ -118,25 +123,33 @@ class _Normalize:
         new_imgs = [normalizer(img) for img in imgs]
         return torch.stack(new_imgs)
 
-    def __call__(self, imgs, inv=False):
+    def __call__(self, imgs: torch.Tensor, inv: bool = False) -> torch.Tensor:
         # normalizer will set device automatically.
         return self._normalize(imgs, inv)
 
 
-def _get_normalizer(dataset_type: str):
+def _get_normalizer(dataset_type: str) -> _Normalize:
     mean = MEANS[dataset_type]
     std = STDS[dataset_type]
     return _Normalize(mean, std)
 
 
-def _get_transform(dataset_type: str, transform: str, train=True):
+def _get_transform(
+    dataset_type: str, 
+    transform: str, 
+    train: bool = True
+) -> "augmentation":
     if train:
         return TRANSFORMS[dataset_type][transform]
     else:
         return T.ToTensor()
 
 
-def _dataset(dataset_type: str, transform: str,  train=True):
+def _dataset(
+    dataset_type: str, 
+    transform: str,  
+    train: bool = True
+) -> torch.utils.data.Dataset:
     """
     Dataset:
     mnist: MNIST
@@ -171,12 +184,16 @@ def _dataset(dataset_type: str, transform: str,  train=True):
     return dataset
 
 
-def load_normalizer(dataset_type: str):
+def load_normalizer(dataset_type: str) -> _Normalize:
     normalizer = _get_normalizer(dataset_type)
     return normalizer
 
 
-def load_dataset(dataset_type: str, transform='default', train=True):
+def load_dataset(
+    dataset_type: str, 
+    transform: str ='default', 
+    train: bool = True
+) -> torch.utils.data.Dataset:
     dataset = _dataset(dataset_type, transform, train)
     return dataset
 
@@ -191,7 +208,13 @@ class _TQDMDataLoader(torch.utils.data.DataLoader):
         )
 
 
-def load_dataloader(dataset, batch_size: int, train=True, show_progress=False):
+def load_dataloader(
+    dataset: torch.utils.data.Dataset, 
+    batch_size: int, 
+    train: bool = True, 
+    show_progress: bool = False
+) -> torch.utils.data.DataLoader:
+
     dataloader = _TQDMDataLoader if show_progress else torch.utils.data.DataLoader
     if train:
         dataloader = dataloader(dataset, batch_size=batch_size,
@@ -208,12 +231,12 @@ def load_dataloader(dataset, batch_size: int, train=True, show_progress=False):
 def load_optimizer(
     model: torch.nn.Module, 
     optim_type: str, *,
-    lr=0.1, momentum=0.9,
-    betas=(0.9, 0.999),
-    weight_decay=1e-4,
-    nesterov=False,
-    **kwargs
-):
+    lr: float = 0.1, momentum: float = 0.9,
+    betas: Tuple[float, float] = (0.9, 0.999),
+    weight_decay: float = 1e-4,
+    nesterov: bool = False,
+    **kwargs: "other hyper-parameters for optimizer"
+) -> torch.optim.Optimizer:
     """
     sgd: SGD
     adam: Adam
@@ -240,8 +263,8 @@ def load_optimizer(
 def load_learning_policy(
     optimizer: torch.optim.Optimizer,
     learning_policy_type: str,
-    **kwargs
-):
+    **kwargs: "other hyper-parameters for learning scheduler"
+) -> "learning policy":
     """
     default: (100, 105), 110 epochs suggested
     null:
@@ -271,7 +294,7 @@ def load_learning_policy(
     return learning_policy
 
 
-def _get_preprocessing(dataset_type: str):
+def _get_preprocessing(dataset_type: str) -> Optional[Dict]:
     preprocessing = None
     if dataset_type in ("cifar10", "cifar100"):
         mean = MEANS[dataset_type]
@@ -284,7 +307,7 @@ def _get_preprocessing(dataset_type: str):
     return preprocessing
 
 
-def _attack(attack_type: str, stepsize: float, steps: int):
+def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     """
     pgd-linf: \ell_{\infty} rel_stepsize=stepsize, steps=steps;
     pgd-l1: \ell_1 version;
@@ -300,6 +323,7 @@ def _attack(attack_type: str, stepsize: float, steps: int):
     bba-l1: \ell_1 version;
     bba-l2: \ell_2 version
     """
+    attack: fb.attacks.Attack
     if attack_type == "pgd-linf":
         attack = fb.attacks.LinfPGD(
             rel_stepsize=stepsize,
@@ -371,14 +395,18 @@ def _attack(attack_type: str, stepsize: float, steps: int):
     return attack
 
 
-def load_attacks(attack_type: str, dataset_type: str, stepsize: float, steps: int):
+def load_attacks(
+    attack_type: str, dataset_type: str, stepsize: float, steps: int
+) -> "Tuple[attack, bounds, preprocessing]":
     attack = _attack(attack_type, stepsize, steps)
     preprocessing = _get_preprocessing(dataset_type)
     bounds = BOUNDS
     return attack, bounds, preprocessing
 
 
-def load_valider(model: torch.nn.Module, device, dataset_type: str):
+def load_valider(
+    model: torch.nn.Module, device: torch.device, dataset_type: str
+) -> AdversaryForValid:
     cfg, epsilon = VALIDER[dataset_type]
     attack, bounds, preprocessing = load_attacks(dataset_type=dataset_type, **cfg)
     valider = AdversaryForValid(
@@ -388,7 +416,9 @@ def load_valider(model: torch.nn.Module, device, dataset_type: str):
     return valider
 
 
-def generate_path(method: str, dataset_type: str, model:str,  description: str):
+def generate_path(
+    method: str, dataset_type: str, model:str, description: str
+) -> Tuple[str, str]:
     info_path = INFO_PATH.format(
         method=method,
         dataset=dataset_type,

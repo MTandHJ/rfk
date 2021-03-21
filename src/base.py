@@ -1,19 +1,20 @@
 
 
 
+from typing import Callable, TypeVar, Any, Union, Optional, List, Tuple, Dict, Iterable, cast
 import torch
 import torch.nn as nn
 import foolbox as fb
 import eagerpy as ep
+
 from models.base import AdversarialDefensiveModel
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
 from .loss_zoo import cross_entropy, kl_divergence
 
 
-
-def enter_attack_exit(func):
-    def wrapper(attacker, *args, **kwargs):
+def enter_attack_exit(func) -> Callable:
+    def wrapper(attacker: Adversary, *args, **kwargs):
         attacker.model.attack(True)
         results = func(attacker, *args, **kwargs)
         attacker.model.attack(False)
@@ -24,19 +25,14 @@ def enter_attack_exit(func):
 
 
 class Coach:
-    """
-    Coach is used to train models.
-    model: ...
-    device: ...
-    loss_func: ...
-    normalizer: an explicit transformer for inputs
-    optimizer: sgd, adam, ...
-    learning_policy: for learning rate decay
-    """
+    
     def __init__(
-        self, model, device,
-        loss_func, normalizer,
-        optimizer, learning_policy
+        self, model: nn.Module, 
+        device: torch.device,
+        loss_func: Callable, 
+        normalizer: Callable[[torch.Tensor], torch.Tensor],
+        optimizer: torch.optim.optimizer.Optimizer, 
+        learning_policy: "learning rate policy"
     ):
         self.model = model
         self.device = device
@@ -48,10 +44,15 @@ class Coach:
         self.acc = AverageMeter("Acc")
         self.progress = ProgressMeter(self.loss, self.acc)
         
-    def save(self, path):
+    def save(self, path: str) -> None:
         torch.save(self.model.state_dict(), path + "/paras.pt")
 
-    def train(self, trainloader, *, epoch=8888):
+    def train(
+        self, 
+        trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
+        *, epoch: int = 8888
+    ) -> float:
+
         self.progress.step() # reset the meter
         self.model.train()
         for inputs, labels in trainloader:
@@ -74,7 +75,13 @@ class Coach:
         self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
-    def adv_train(self, trainloader, attacker, *, epoch=8888):
+    def adv_train(
+        self, 
+        trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
+        attacker: Adversary, 
+        *, epoch: int = 8888
+    ) -> float:
+    
         assert isinstance(attacker, Adversary)
         self.progress.step() # reset the meter
         for inputs, labels in trainloader:
@@ -99,7 +106,13 @@ class Coach:
         self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
-    def trades(self, trainloader, attacker, *, leverage=6., epoch=8888):
+    def trades(
+        self, 
+        trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],
+        attacker: Adversary, 
+        *, leverage: float = 6., epoch: int = 8888
+    ) -> float:
+
         self.progress.step()
         for inputs, labels in trainloader:
             inputs = inputs.to(self.device)
@@ -134,7 +147,13 @@ class Coach:
 
 
 class FBDefense:
-    def __init__(self, model, device, bounds, preprocessing):
+    def __init__(
+        self, 
+        model: nn.Module, 
+        device: torch.device, 
+        bounds: Tuple[float, float], 
+        preprocessing: Optional[Dict]
+    ) -> None:
         self.rmodel = fb.PyTorchModel(
             model,
             bounds=bounds,
@@ -144,16 +163,16 @@ class FBDefense:
 
         self.model = model
     
-    def train(self, mode=True):
+    def train(self, mode: bool = True) -> None:
         self.model.train(mode=mode)
 
-    def eval(self):
+    def eval(self) -> None:
         self.train(mode=False)
 
-    def query(self, inputs):
+    def query(self, inputs: torch.Tensor) -> torch.Tensor:
         return self.rmodel(inputs)
 
-    def __call__(self, inputs):
+    def __call__(self, inputs: torch.Tensor) -> torch.Tensor:
         return self.query(inputs)
 
 
@@ -169,9 +188,13 @@ class Adversary:
             other critera could be given to carry target attack or black attack.
     """
     def __init__(
-        self, model, attacker, device,
-        bounds, preprocessing, epsilon
-    ):
+        self, model: AdversarialDefensiveModel, 
+        attacker: Callable, device: torch.device,
+        bounds: Tuple[float, float], 
+        preprocessing: Optional[Dict], 
+        epsilon: Union[None, float, List[float]]
+    ) -> None:
+
         model.eval()
         self.fmodel = fb.PyTorchModel(
             model,
@@ -184,41 +207,67 @@ class Adversary:
         self.epsilon = epsilon
         self.attacker = attacker 
 
-    def attack(self, inputs, criterion, epsilon=None):
+    def attack(
+        self, 
+        inputs: torch.Tensor, 
+        criterion: Any, 
+        epsilon: Union[None, float, List[float]] = None
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
         if epsilon is None:
             epsilon = self.epsilon
         self.model.eval() # make sure in evaluating mode ...
         return self.attacker(self.fmodel, inputs, criterion, epsilons=epsilon)
 
-    def __call__(self, inputs, criterion, epsilon=None):
+    def __call__(
+        self, 
+        inputs: torch.Tensor, criterion: Any,
+        epsilon: Optional[float] = None
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
         return self.attack(inputs, criterion, epsilon)
 
 
 class AdversaryForTrain(Adversary):
 
     @enter_attack_exit
-    def attack(self, inputs, criterion, epsilon=None):
+    def attack(
+        self, inputs: torch.Tensor, 
+        criterion: Any, 
+        epsilon: Optional[float] = None
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
         return super(AdversaryForTrain, self).attack(inputs, criterion, epsilon)
 
 
 class AdversaryForValid(Adversary): 
 
     @torch.no_grad()
-    def accuracy(self, inputs, labels):
+    def accuracy(self, inputs: torch.Tensor, labels: torch.Tensor) -> int:
         inputs_, labels_ = ep.astensors(inputs, labels)
         del inputs, labels
 
         self.model.eval() # make sure in evaluating mode ...
         predictions = self.fmodel(inputs_).argmax(axis=-1)
         accuracy = (predictions == labels_)
-        return accuracy.sum().item()
+        return cast(int, accuracy.sum().item())
 
-    def success(self, inputs, criterion, epsilon=None):
+    def success(
+        self, 
+        inputs: torch.Tensor, criterion: Any, 
+        epsilon: Union[None, float, List[float]] = None
+    ) -> int:
+
         _, _, is_adv = self.attack(inputs, criterion, epsilon)
-        return is_adv.sum().item()
+        return cast(int, is_adv.sum().item())
 
-    def evaluate(self, dataloader, epsilon=None):
-        datasize = len(dataloader.dataset)
+    def evaluate(
+        self, 
+        dataloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
+        epsilon: Union[None, float, List[float]] = None
+    ) -> Tuple[float, float]:
+
+        datasize = len(dataloader.dataset) # type: ignore
         running_accuracy = 0
         running_success = 0
         for inputs, labels in dataloader:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from typing import Tuple
 import torch
 import argparse
 from src.loadopts import *
@@ -34,18 +35,20 @@ class Defense(AdversarialDefensiveModel):
     The inputs should be normalized 
     before fed into the model.
     """
-    def __init__(self, model, normalizer):
+    def __init__(
+        self, model: AdversarialDefensiveModel, normalizer: "_Normalize"
+    ):
         super(Defense, self).__init__()
 
         self.model = model
         self.normalizer = normalizer
 
-    def forward(self, inputs):
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         inputs_ = self.normalizer(inputs)
         return self.model(inputs_)
 
 
-def load_cfg():
+def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.utils import gpu, load, set_seed
 

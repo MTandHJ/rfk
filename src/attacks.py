@@ -3,9 +3,11 @@
 
 
 import torch
+import foolbox as fb
 import eagerpy as ep
 from foolbox.attacks import LinfProjectedGradientDescentAttack
 
+from typing import Callable
 
 class LinfPGDKLDiv(LinfProjectedGradientDescentAttack):
 

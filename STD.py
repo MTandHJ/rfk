@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 
+from typing import Tuple
 import torch
 import torch.nn as nn
 import argparse
 from src.loadopts import *
-
 
 
 
@@ -47,7 +47,7 @@ opts.description = FMT.format(**opts.__dict__)
 
 
 
-def load_cfg():
+def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach
     from src.utils import gpu, set_seed, load_checkpoint

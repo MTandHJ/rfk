@@ -3,7 +3,9 @@
 
 
 
+from typing import Optional, Any, Union
 import torch
+import torch.nn as nn
 import numpy as np
 import random
 import os
@@ -14,18 +16,18 @@ from .config import SAVED_FILENAME
 
 class AverageMeter:
 
-    def __init__(self, name, fmt=".5f"):
+    def __init__(self, name: str, fmt: str = ".5f"):
         self.name = name
         self.fmt = fmt
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         self.val = 0.
         self.avg = 0.
         self.sum = 0.
         self.count = 0
 
-    def update(self, val, n=1, mode="mean"):
+    def update(self, val: float, n: int = 1, mode: str = "mean") -> None:
         self.val = val
         self.count += n
         if mode == "mean":
@@ -40,23 +42,24 @@ class AverageMeter:
 
 
 class ProgressMeter:
-    def __init__(self, *meters: AverageMeter, prefix=""):
+    def __init__(self, *meters: AverageMeter, prefix: str = ""):
         self.meters = list(meters)
         self.prefix = prefix
 
-    def display(self, *, epoch=8888):
+    def display(self, *, epoch: int = 8888) -> None:
         entries = [self.prefix + f"[Epoch: {epoch:<4d}]"]
         entries += [str(meter) for meter in self.meters]
         print('\t'.join(entries))
 
-    def add(self, *meters: AverageMeter):
+    def add(self, *meters: AverageMeter) -> None:
         self.meters += list(meters)
 
-    def step(self):
+    def step(self) -> None:
         for meter in self.meters:
             meter.reset()
 
-def gpu(*models):
+def gpu(*models: nn.Module) -> torch.device:
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     for model in models:
         if torch.cuda.device_count() > 1:
@@ -65,14 +68,14 @@ def gpu(*models):
             model.to(device)
     return device
 
-def mkdirs(*paths):
+def mkdirs(*paths: str) -> None:
     for path in paths:
         try:
             os.makedirs(path)
         except FileExistsError:
             pass
 
-def readme(path, opts, mode="w"):
+def readme(path: str, opts: "parser", mode: str = "w") -> None:
     """
     opts: the argparse
     """
@@ -87,14 +90,14 @@ def readme(path, opts, mode="w"):
         fh.write(info)
 
 # load model's parameters
-def load(model, path, device, strict=True, except_key=None):
-    """
-    :param model:
-    :param filename:
-    :param device:
-    :param except_key: drop the correspoding key module
-    :return:
-    """
+def load(
+    model: nn.Module, 
+    path: str, 
+    device: torch.device,
+    strict: bool = True, 
+    except_key: Optional[str] = None
+) -> None:
+
     filename = os.path.join(path, SAVED_FILENAME)
     if str(device) =="cpu":
         state_dict = torch.load(filename, map_location="cpu")
@@ -109,7 +112,13 @@ def load(model, path, device, strict=True, except_key=None):
     model.eval()
 
 # save the checkpoint
-def save_checkpoint(path, model, optimizer, lr_scheduler, epoch):
+def save_checkpoint(
+    path: str, 
+    model: nn.Module, 
+    optimizer: torch.optim.optimizer.Optimizer, 
+    lr_scheduler: "learning rate policy",
+    epoch: int
+) -> None:
     path = path + "/model-optim-lr_sch-epoch.tar"
     torch.save(
         {
@@ -122,7 +131,12 @@ def save_checkpoint(path, model, optimizer, lr_scheduler, epoch):
     )
 
 # load the checkpoint
-def load_checkpoint(path, model, optimizer, lr_scheduler):
+def load_checkpoint(
+    path: str, 
+    model: nn.Module, 
+    optimizer: torch.optim.optimizer.Optimizer, 
+    lr_scheduler: "learning rate policy"
+) -> int:
     path = path + "/model-optim-lr_sch-epoch.tar"
     checkpoint = torch.load(path)
     model.load_state_dict(checkpoint['model'])
@@ -131,7 +145,7 @@ def load_checkpoint(path, model, optimizer, lr_scheduler):
     epoch = checkpoint['epoch']
     return epoch
 
-def set_seed(seed):
+def set_seed(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -140,5 +154,10 @@ def set_seed(seed):
 
 # caculate the lp distance along the dim you need,
 # dim could be tuple or list containing multi dims.
-def distance_lp(x, y, p, dim=None):
+def distance_lp(
+    x: torch.Tensor, 
+    y: torch.Tensor, 
+    p: Union[int, float, str], 
+    dim: Optional[int] = None
+) -> torch.Tensor:
     return torch.norm(x-y, p, dim=dim)

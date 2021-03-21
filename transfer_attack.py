@@ -6,6 +6,7 @@ Transfer Attack: utilize the source_model to attack
 the target model...
 """
 
+from typing import Tuple
 import torch
 import argparse
 from src.loadopts import *
@@ -39,7 +40,7 @@ opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
 
 
-def load_cfg():
+def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import FBDefense, Adversary
     from src.utils import gpu, load, set_seed
