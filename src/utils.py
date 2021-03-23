@@ -115,7 +115,7 @@ def load(
 def save_checkpoint(
     path: str, 
     model: nn.Module, 
-    optimizer: torch.optim.optimizer.Optimizer, 
+    optimizer: torch.optim.Optimizer, 
     lr_scheduler: "learning rate policy",
     epoch: int
 ) -> None:
@@ -134,7 +134,7 @@ def save_checkpoint(
 def load_checkpoint(
     path: str, 
     model: nn.Module, 
-    optimizer: torch.optim.optimizer.Optimizer, 
+    optimizer: torch.optim.Optimizer, 
     lr_scheduler: "learning rate policy"
 ) -> int:
     path = path + "/model-optim-lr_sch-epoch.tar"

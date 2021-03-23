@@ -1,18 +1,18 @@
 
 
+from typing import Iterable, cast
 import torch
 import eagerpy as ep
 import foolbox as fb
 from foolbox.criteria import Criterion, Misclassification, TargetedMisclassification
-from .base import FBDefense
 
 
-from typing import Iterable, cast
+
 
 
 class TransferClassification(Misclassification):
 
-    def __init__(self, model: FBDefense, labels: torch.Tensor):
+    def __init__(self, model: "Adversary", labels: torch.Tensor):
         super(TransferClassification, self).__init__(labels)
         self.target_model = model
     

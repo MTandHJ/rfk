@@ -14,7 +14,7 @@ from .loss_zoo import cross_entropy, kl_divergence
 
 
 def enter_attack_exit(func) -> Callable:
-    def wrapper(attacker: Adversary, *args, **kwargs):
+    def wrapper(attacker: "Adversary", *args, **kwargs):
         attacker.model.attack(True)
         results = func(attacker, *args, **kwargs)
         attacker.model.attack(False)
@@ -31,7 +31,7 @@ class Coach:
         device: torch.device,
         loss_func: Callable, 
         normalizer: Callable[[torch.Tensor], torch.Tensor],
-        optimizer: torch.optim.optimizer.Optimizer, 
+        optimizer: torch.optim.Optimizer, 
         learning_policy: "learning rate policy"
     ):
         self.model = model
@@ -78,7 +78,7 @@ class Coach:
     def adv_train(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
-        attacker: Adversary, 
+        attacker: "Adversary", 
         *, epoch: int = 8888
     ) -> float:
     
@@ -109,7 +109,7 @@ class Coach:
     def trades(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],
-        attacker: Adversary, 
+        attacker: "Adversary", 
         *, leverage: float = 6., epoch: int = 8888
     ) -> float:
 
