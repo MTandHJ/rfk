@@ -36,7 +36,7 @@ parser.add_argument("-beta1", "--beta1", type=float, default=0.9,
                 help="the first beta argument for Adam")
 parser.add_argument("-beta2", "--beta2", type=float, default=0.999,
                 help="the second beta argument for Adam")
-parser.add_argument("-wd", "--weight_decay", type=float, default=5e-4,
+parser.add_argument("-wd", "--weight_decay", type=float, default=2e-4,
                 help="weight decay")
 parser.add_argument("-lr", "--lr", "--LR", "--learning_rate", type=float, default=0.1)
 parser.add_argument("-lp", "--learning_policy", type=str, default="TRADES", 
@@ -148,7 +148,7 @@ def main(
     start_epoch, info_path
 ):  
     from src.utils import save_checkpoint
-    for epoch in range(start_epoch, opts.epochs+1):
+    for epoch in range(start_epoch, opts.epochs):
 
         if epoch % SAVE_FREQ == 0:
             save_checkpoint(info_path, coach.model, coach.optimizer, coach.learning_policy, epoch)
