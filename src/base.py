@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import foolbox as fb
 import eagerpy as ep
+import os
 
 from models.base import AdversarialDefensiveModel
 from .criteria import LogitsAllFalse
@@ -44,8 +45,8 @@ class Coach:
         self.acc = AverageMeter("Acc")
         self.progress = ProgressMeter(self.loss, self.acc)
         
-    def save(self, path: str) -> None:
-        torch.save(self.model.state_dict(), path + "/paras.pt")
+    def save(self, path: str, filename: str = "paras.pt") -> None:
+        torch.save(self.model.state_dict(), os.path.join(path, filename))
 
     def train(
         self, 
