@@ -268,7 +268,8 @@ def load_learning_policy(
     """
     default: (100, 105), 110 epochs suggested
     null:
-    STD: (82, 123), 200 epochs suggested
+    STD: (82, 123), 164 epochs suggested
+    STD-wrn: (60, 120, 160), 200 epochs suggested
     AT: (102, 154), 200 epochs suggested
     TRADES: (75, 90, 100), 76 epochs suggested
     TRADES-M: (55, 75, 90), 100 epochs suggested
