@@ -199,7 +199,7 @@ $\epsilon=16/255$ is also a usual choice.
 |   Method   |   Net    |   LP   | TA(%)  | PGD-50 |  AA  |  C&W  | DeepFool | BBA |
 |    STD     | ResNet32 | STD | 93.270 | 0.010 | 0.000 | 0.000 | 0.660 | - |
 |     AT     | ResNet32 | AT | 79.420 | 56.700 | 53.310 |   54.670    |  58.480  |  -  |
-|   TRADES   | ResNet32 | TRADES | 70.040 | 54.290 | 51.000 | 51.320 |  54.850  | - |
+|   TRADES   | ResNet32 | TRADES | 74.040 | 54.290 | 51.000 | 51.320 |  54.850  | - |
 | STD | ResNet18 | STD | 95.280 | 0.340 | 0.000 | 0.030 | 13.860 | - |
 | AT | ResNet18 | AT | 84.780 | 54.970 | 53.800 | 54.920 | 60.530 | - |
 | TRADES | ResNet18 | TRADES | 81.030 | 59.900 | 56.850 | 57.420 |  62.040  | - |
