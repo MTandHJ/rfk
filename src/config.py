@@ -78,8 +78,8 @@ TRANSFORMS = {
 
 VALIDER = {
     "mnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
-    "cifar10": (Config(attack_type="pgd-linf", stepsize=0.1, steps=20), 8/255),
-    "cifar100": (Config(attack_type="pgd-linf", stepsize=0.1, steps=20), 8/255)
+    "cifar10": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255),
+    "cifar100": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255)
 }
 
 # env settings
@@ -103,8 +103,8 @@ STDS = {
 # the settings of optimizers of which lr could be pointed
 # additionally.
 OPTIMS = {
-    "sgd": Config(lr=0.1, momentum=0.9, weight_decay=0.0005, nesterov=False),
-    "adam": Config(lr=0.01, betas=(0.9, 0.999), weight_decay=0.)
+    "sgd": Config(lr=0.1, momentum=0.9, weight_decay=0.0005, nesterov=False, prefix="SGD:"),
+    "adam": Config(lr=0.01, betas=(0.9, 0.999), weight_decay=0., prefix="Adam:")
 }
 
 
@@ -113,65 +113,58 @@ LEARNING_POLICY = {
    "default": (
         "MultiStepLR",
         Config(
-            milestones=[100, 105],
-            gamma=0.1
-        ),
-        "Default leaning policy will be applied: " \
-        "decay the learning rate at 100 and 105 epochs by a factor 10."
+            milestones=[100, 150],
+            gamma=0.1,
+            prefix="Default leaning policy will be applied:\n"
+        )
     ),
     "null": (
         "StepLR",
         Config(
             step_size=9999999999999,
-            gamma=1
-        ),
-        "Null leaning policy will be applied: " \
-        "keep the learning rate fixed during training."
+            gamma=1,
+            prefix="Null leaning policy will be applied:\n"
+        )
     ),
     "STD": (
         "MultiStepLR",
         Config(
             milestones=[82, 123],
-            gamma=0.1
-        ),
-        "STD leaning policy will be applied: " \
-        "decay the learning rate at 82 and 123 epochs by a factor 10."
+            gamma=0.1,
+            prefix="STD leaning policy will be applied:\n"
+        )
     ),
     "STD-wrn": (
         "MultiStepLR",
         Config(
             milestones=[60, 120, 160],
-            gamma=0.2
-        ),
-        "STD leaning policy will be applied: " \
-        "decay the learning rate at 60, 120, 160 epochs to 0.2 of the current"
+            gamma=0.2,
+            prefix="STD-wrn leaning policy will be applied:\n"
+        )
     ),
     "AT":(
         "MultiStepLR",
         Config(
             milestones=[102, 154],
-            gamma=0.1
-        ),
-        "AT learning policy, an official config, " \
-        "decays the learning rate at 102 and 154 epochs by a factor 10 for total 200 epochs."
+            gamma=0.1,
+            prefix="AT learning policy, an official config:\n"
+        )
     ),
     "TRADES":(
         "MultiStepLR",
         Config(
             milestones=[75, 90, 100],
-            gamma=0.1
-        ),
-        "TRADES learning policy, an official config, " \
-        "decays the learning rate at 75 epochs by factor 10 for total 76 epochs."
+            gamma=0.1,
+            prefix="TRADES learning policy, an official config:\n"
+        )
     ),
     "TRADES-M":(
         "MultiStepLR",
         Config(
             milestones=[55, 75, 90],
-            gamma=0.1
-        ),
-        "TRADES learning policy, an official config for MNIST, " \
-        "decays the learning rate at 55, 75, 90 epochs by factor 10 for total 100 epochs."
+            gamma=0.1,
+            prefix="TRADES learning policy, an official config for MNIST:\n"
+        )
     ),
     "cosine":(   
         "CosineAnnealingLR",   
@@ -179,8 +172,8 @@ LEARNING_POLICY = {
             T_max=200,
             eta_min=0.,
             last_epoch=-1,
-        ),
-        "cosine learning policy: T_max == epochs - 1"
+            prefix="cosine learning policy: T_max == epochs - 1:\n"
+        )
     )
 }
 

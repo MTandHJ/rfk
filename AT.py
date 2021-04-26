@@ -10,7 +10,8 @@ from src.loadopts import *
 
 
 METHOD = "AT"
-SAVE_FREQ = 20
+SAVE_FREQ = 5
+PRINT_FREQ = 20
 FMT = "{description}={learning_policy}-{optimizer}-{lr}" \
         "={attack}-{epsilon:.4f}-{stepsize}-{steps}" \
         "={batch_size}={transform}"
@@ -152,6 +153,7 @@ def main(
         if epoch % SAVE_FREQ == 0:
             save_checkpoint(info_path, coach.model, coach.optimizer, coach.learning_policy, epoch)
 
+        if epoch % PRINT_FREQ == 0:
             train_accuracy, train_success = valider.evaluate(trainloader)
             valid_accuracy, valid_success = valider.evaluate(testloader)
             print(f"Train >>> [TA: {train_accuracy:.5f}]    [RA: {1 - train_success:.5f}]")
