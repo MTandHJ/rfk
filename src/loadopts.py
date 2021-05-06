@@ -428,7 +428,8 @@ def generate_path(
         method=method,
         dataset=dataset_type,
         model=model,
-        description=description
+        description=description,
+        time=time.strftime(TIMEFMT)
     )
     return info_path, log_path
 
