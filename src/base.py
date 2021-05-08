@@ -12,6 +12,7 @@ from models.base import AdversarialDefensiveModel
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
 from .loss_zoo import cross_entropy, kl_divergence
+from .config import SAVED_FILENAME
 
 
 def enter_attack_exit(func) -> Callable:
@@ -45,7 +46,7 @@ class Coach:
         self.acc = AverageMeter("Acc")
         self.progress = ProgressMeter(self.loss, self.acc)
         
-    def save(self, path: str, filename: str = "paras.pt") -> None:
+    def save(self, path: str, filename: str = SAVED_FILENAME) -> None:
         torch.save(self.model.state_dict(), os.path.join(path, filename))
 
     def train(

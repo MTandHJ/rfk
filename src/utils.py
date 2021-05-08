@@ -94,11 +94,12 @@ def load(
     model: nn.Module, 
     path: str, 
     device: torch.device,
+    filename: str = SAVED_FILENAME,
     strict: bool = True, 
     except_key: Optional[str] = None
 ) -> None:
 
-    filename = os.path.join(path, SAVED_FILENAME)
+    filename = os.path.join(path, filename)
     if str(device) =="cpu":
         state_dict = torch.load(filename, map_location="cpu")
         
