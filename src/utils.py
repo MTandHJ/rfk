@@ -3,14 +3,19 @@
 
 
 
-from typing import Optional, Any, Union
+from typing import Optional, Any, Union, List
 import torch
 import torch.nn as nn
 import numpy as np
+import matplotlib.pyplot as plt
+
 import random
 import os
 import sys
-from .config import SAVED_FILENAME
+import copy
+import time
+
+from .config import SAVED_FILENAME, TIMEFMT
 
 
 
@@ -40,6 +45,28 @@ class AverageMeter:
         fmtstr = "{name} Avg:{avg:{fmt}}"
         return fmtstr.format(**self.__dict__)
 
+class TrackMeter:
+
+    def __init__(self, name: str, fmt: str = ".5f"):
+        self.name = name
+        self.__history = []
+        self.__timeline = []
+
+    @property
+    def history(self) -> List:
+        return copy.deepcopy(self.__history)
+
+    @property
+    def timeline(self) -> List:
+        return copy.deepcopy(self.__timeline)
+
+    def track(self, data: float, T: int) -> None:
+        self.__history.append(data)
+        self.__timeline.append(T)
+
+    def __call__(self, *, data: float, T: int) -> None:
+        self.track(data, T)
+
 
 class ProgressMeter:
     def __init__(self, *meters: AverageMeter, prefix: str = ""):
@@ -57,6 +84,42 @@ class ProgressMeter:
     def step(self) -> None:
         for meter in self.meters:
             meter.reset()
+
+class ImageMeter:
+    def __init__(
+        self, *meters: TrackMeter, title: str = ""
+    ):
+        from freeplot.base import FreePlot
+        self.meters = list(meters)
+        self.title = title
+        self.fp = FreePlot(
+            shape=(1, 1),
+            figsize=(2.2, 2),
+            titles=(title,),
+            dpi=300
+        )
+        self.fp.set_label("Val", axis='y')
+        self.fp.set_label("T", axis='x')
+        self.fp.set_title(y=1.)
+
+    def add(self, *meters: TrackMeter) -> None:
+        self.meters += list(meters)
+
+    def plot(self):
+        for meter in self.meters:
+            x = meter.timeline
+            y = meter.history
+            self.fp.lineplot(x, y, label=meter.name)
+        self.fp[0].legend()
+        self.fp.savefig
+        plt.tight_layout()
+    
+    def save(self, writter: 'SummaryWriter', postfix: str = None):
+        if postfix is None:
+            postfix = time.strftime(TIMEFMT)
+        filename = f"{self.title}_{postfix}"
+        writter.add_figure(filename, self.fp.fig)
+
 
 def gpu(*models: nn.Module) -> torch.device:
 
