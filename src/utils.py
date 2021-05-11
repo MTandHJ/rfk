@@ -13,9 +13,8 @@ import random
 import os
 import sys
 import copy
-import time
 
-from .config import SAVED_FILENAME, TIMEFMT
+from .config import SAVED_FILENAME
 
 
 
@@ -114,10 +113,8 @@ class ImageMeter:
         self.fp.savefig
         plt.tight_layout()
     
-    def save(self, writter: 'SummaryWriter', postfix: str = None):
-        if postfix is None:
-            postfix = time.strftime(TIMEFMT)
-        filename = f"{self.title}_{postfix}"
+    def save(self, writter: 'SummaryWriter', postfix: str = ''):
+        filename = f"{self.title}{postfix}"
         writter.add_figure(filename, self.fp.fig)
 
 
