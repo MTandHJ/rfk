@@ -97,14 +97,14 @@ class ImageMeter:
             titles=(title,),
             dpi=300
         )
-        self.fp.set_label("Val", axis='y')
-        self.fp.set_label("T", axis='x')
+        # self.fp.set_label("Val", axis='y')
+        # self.fp.set_label("T", axis='x')
         self.fp.set_title(y=1.)
 
     def add(self, *meters: TrackMeter) -> None:
         self.meters += list(meters)
 
-    def plot(self):
+    def plot(self) -> None:
         for meter in self.meters:
             x = meter.timeline
             y = meter.history
@@ -113,7 +113,7 @@ class ImageMeter:
         self.fp.savefig
         plt.tight_layout()
     
-    def save(self, writter: 'SummaryWriter', postfix: str = ''):
+    def save(self, writter: 'SummaryWriter', postfix: str = '') -> None:
         filename = f"{self.title}{postfix}"
         writter.add_figure(filename, self.fp.fig)
 
