@@ -29,7 +29,7 @@ def enter_attack_exit(func) -> Callable:
 class Coach:
     
     def __init__(
-        self, model: nn.Module, 
+        self, model: AdversarialDefensiveModel,
         device: torch.device,
         loss_func: Callable, 
         normalizer: Callable[[torch.Tensor], torch.Tensor],

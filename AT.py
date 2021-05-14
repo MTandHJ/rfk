@@ -2,8 +2,6 @@
 
 
 from typing import Tuple
-import torch
-import torch.nn as nn
 import argparse
 from src.loadopts import *
 
@@ -24,7 +22,7 @@ parser.add_argument("dataset", type=str)
 parser.add_argument("--attack", type=str, default="pgd-linf")
 parser.add_argument("--epsilon", type=float, default=8/255)
 parser.add_argument("--stepsize", type=float, default=0.25, 
-                    help="pgd:rel_stepsize, cwl2:step_size, deepfool:overshoot, bb:lr")
+                help="pgd:rel_stepsize, cwl2:step_size, deepfool:overshoot, bb:lr")
 parser.add_argument("--steps", type=int, default=10)
 
 # basic settings
@@ -58,8 +56,7 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach, AdversaryForTrain
-    from src.utils import gpu, set_seed, load_checkpoint, \
-                            TrackMeter, ImageMeter
+    from src.utils import gpu, set_seed, load_checkpoint
 
     cfg = Config()
     set_seed(opts.seed)
