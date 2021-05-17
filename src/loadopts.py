@@ -317,7 +317,7 @@ def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     fgsm: no hyper-parameters;
     cw-l2: stepsize=stepsize, steps=steps;
     ead: initial_stepsize=stepsize, steps=steps;
-    sparse-l1: rel_stepsize=stepsize, steps=steps;
+    slide: \ell_1 attack, rel_stepsize=stepsize, steps=steps;
     deepfool-linf: \ell_{\infty} version, overshoot=stepsize, steps=steps;
     deepfool-l2: \ell_2 version;
     bba-inf: \ell_{infty} version, lr=stepsize, steps=steps, overshott=1.1;
@@ -360,7 +360,7 @@ def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
             initial_stepsize=stepsize,
             steps=steps
         )
-    elif attack_type == "sparse-l1":
+    elif attack_type == "slide":
         attack = fb.attacks.SparseL1DescentAttack(
             rel_stepsize=stepsize,
             steps=steps
