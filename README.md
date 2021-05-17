@@ -181,15 +181,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  | PGD-50 | Sparse |  BBA  |
-| :--------------: | :----: | :----: | :---: |
-|     stepsize     |  0.05  |  0.05  | 0.001 |
-|      steps       |   50   |   50   | 1000  |
-|   rel_stepsize   |  0.05  |  0.05  |   -   |
-|   abs_stepsize   |  0.5   |  0.5   |   -   |
-| initial_stepsize |   -    |   -    |   -   |
-|    overshoot     |   -    |   -    |   -   |
-|        lr        |   -    |   -    | 0.001 |
+|                  | PGD-50 | SLIDE |  BBA  |
+| :--------------: | :----: | :---: | :---: |
+|     stepsize     |  0.05  | 0.05  | 0.001 |
+|      steps       |   50   |  50   | 1000  |
+|   rel_stepsize   |  0.05  | 0.05  |   -   |
+|   abs_stepsize   |  0.5   |  0.5  |   -   |
+| initial_stepsize |   -    |   -   |   -   |
+|    overshoot     |   -    |   -   |   -   |
+|        lr        |   -    |   -   | 0.001 |
 
 
 
@@ -249,7 +249,7 @@ $\epsilon=16/255$ is also a usual choice.
 
 | $\epsilon$ |     -     |    -    |   0    |   12   |   12   |
 | :--------: | :-------: | :-----: | :----: | :----: | :----: |
-|   Method   |    Net    |   LP    | TA(%)  | PGD-50 | Sparse |
+|   Method   |    Net    |   LP    | TA(%)  | PGD-50 | SLIDE  |
 |    STD     | ResNet32  |   STD   | 93.270 | 0.620  | 0.690  |
 |     AT     | ResNet32  |   AT    | 79.420 | 57.250 | 23.080 |
 |   TRADES   | ResNet32  | TRADES  | 70.040 | 54.950 | 25.240 |
@@ -302,7 +302,7 @@ $\epsilon=16/255$ is also a usual choice.
 
 | $\epsilon$ |   -   |    -     |   0    |   10   |   10   |  10  |
 | :--------: | :---: | :------: | :----: | :----: | :----: | :--: |
-|   Method   |  Net  |    LP    | TA(%)  | PGD-50 | Sparse | BBA  |
+|   Method   |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
 |    STD     | mnist |   null   | 99.735 | 82.520 | 3.090  |  -   |
 |     AT     | mnist |   null   | 99.400 | 96.380 | 78.560 |  -   |
 |   TRADES   | mnist | TRADES-M | 99.450 | 96.410 | 94.460 |  -   |
