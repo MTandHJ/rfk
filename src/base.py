@@ -70,7 +70,7 @@ class Coach:
             self.optimizer.step()
 
             accuracy_count = (outs.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0))
+            self.loss.update(loss.item(), inputs.size(0), mode="mean")
             self.acc.update(accuracy_count, inputs.size(0), mode="sum")
 
         self.progress.display(epoch=epoch) 
@@ -101,7 +101,7 @@ class Coach:
             self.optimizer.step()
 
             accuracy_count = (outs.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0))
+            self.loss.update(loss.item(), inputs.size(0), mode="mean")
             self.acc.update(accuracy_count, inputs.size(0), mode="sum")
 
         self.progress.display(epoch=epoch)

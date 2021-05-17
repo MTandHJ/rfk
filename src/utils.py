@@ -38,6 +38,8 @@ class AverageMeter:
             self.sum += val * n
         elif mode == "sum":
             self.sum += val
+        else:
+            raise ValueError(f"Receive mode {mode} but [mean|sum] expected ...")
         self.avg = self.sum / self.count
 
     def __str__(self):
