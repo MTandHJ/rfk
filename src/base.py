@@ -218,7 +218,7 @@ class Adversary:
 
         if epsilon is None:
             epsilon = self.epsilon
-        self.model.eval() # make sure in evaluating mode ...
+        self.model.eval() # make sure in evaluation mode ...
         return self.attacker(self.fmodel, inputs, criterion, epsilons=epsilon)
 
     def __call__(
@@ -249,7 +249,7 @@ class AdversaryForValid(Adversary):
         inputs_, labels_ = ep.astensors(inputs, labels)
         del inputs, labels
 
-        self.model.eval() # make sure in evaluating mode ...
+        self.model.eval() # make sure in evaluation mode ...
         predictions = self.fmodel(inputs_).argmax(axis=-1)
         accuracy = (predictions == labels_)
         return cast(int, accuracy.sum().item())
@@ -266,12 +266,14 @@ class AdversaryForValid(Adversary):
     def evaluate(
         self, 
         dataloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
-        epsilon: Union[None, float, List[float]] = None
+        epsilon: Union[None, float, List[float]] = None,
+        *, defending: bool = True
     ) -> Tuple[float, float]:
 
         datasize = len(dataloader.dataset) # type: ignore
         running_accuracy = 0
         running_success = 0
+        self.model.defend(defending) # enter 'defending' mode
         for inputs, labels in dataloader:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)

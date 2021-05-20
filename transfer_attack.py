@@ -42,7 +42,7 @@ opts.description = FMT.format(**opts.__dict__)
 
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
-    from src.base import FBDefense, Adversary
+    from src.base import FBDefense, AdversaryForValid
     from src.utils import gpu, load, set_seed
 
     cfg = Config()
@@ -93,7 +93,7 @@ def load_cfg() -> Tuple[Config, str]:
         stepsize=opts.stepsize, steps=opts.steps
     )
 
-    cfg['attacker'] = Adversary(
+    cfg['attacker'] = AdversaryForValid(
         model=source_model, attacker=attack, device=device,
         bounds=bounds, preprocessing=preprocessing, epsilon=opts.epsilon
     )
