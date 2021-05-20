@@ -1,4 +1,5 @@
 
+import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
 
@@ -7,38 +8,40 @@ class Sequential(nn.Sequential, AdversarialDefensiveModel): ...
 class ModuleList(nn.ModuleList, AdversarialDefensiveModel): ...
 
 class TriggerBN1d(AdversarialDefensiveModel):
-    
-    def __init__(self, num_features):
+
+    def __init__(self, num_features: int, **kwargs):
         super(TriggerBN1d, self).__init__()
-        self.bn_clean = nn.BatchNorm1d(num_features)
-        self.bn_adv = nn.BatchNorm1d(num_features)
+        self.bn_first = nn.BatchNorm1d(num_features, **kwargs)
+        self.bn_second = nn.BatchNorm1d(num_features, **kwargs)
 
-        nn.init.constant_(self.bn_adv.weight, 1.)
-        nn.init.constant_(self.bn_adv.bias, 0.)
-        nn.init.constant_(self.bn_clean.weight, 1.)
-        nn.init.constant_(self.bn_clean.bias, 0.)
+        nn.init.constant_(self.bn_first.weight, 1.)
+        nn.init.constant_(self.bn_first.bias, 0.)
+        nn.init.constant_(self.bn_second.weight, 1.)
+        nn.init.constant_(self.bn_second.bias, 0.)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
+        # bn_first, the main batch normalization for defending
         if self.defending:
-            return self.bn_adv(x)
+            return self.bn_first(x)
         else:
-            return self.bn_clean(x)
+            return self.bn_second(x)
 
 
 class TriggerBN2d(AdversarialDefensiveModel):
     
-    def __init__(self, num_features):
+    def __init__(self, num_features: int, **kwargs):
         super(TriggerBN2d, self).__init__()
-        self.bn_clean = nn.BatchNorm2d(num_features)
-        self.bn_adv = nn.BatchNorm2d(num_features)
+        self.bn_first = nn.BatchNorm2d(num_features, **kwargs)
+        self.bn_second = nn.BatchNorm2d(num_features, **kwargs)
 
-        nn.init.constant_(self.bn_adv.weight, 1.)
-        nn.init.constant_(self.bn_adv.bias, 0.)
-        nn.init.constant_(self.bn_clean.weight, 1.)
-        nn.init.constant_(self.bn_clean.bias, 0.)
+        nn.init.constant_(self.bn_first.weight, 1.)
+        nn.init.constant_(self.bn_first.bias, 0.)
+        nn.init.constant_(self.bn_second.weight, 1.)
+        nn.init.constant_(self.bn_second.bias, 0.)
 
     def forward(self, x):
+        # bn_first, the main batch normalization for defending
         if self.defending:
-            return self.bn_adv(x)
+            return self.bn_first(x)
         else:
-            return self.bn_clean(x)
+            return self.bn_second(x)
