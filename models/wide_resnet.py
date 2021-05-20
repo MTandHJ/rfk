@@ -11,6 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .base import AdversarialDefensiveModel
+from .layerops import Sequential
 
 
 __all__ = ["WideResNet", "wrn_28_10", "wrn_34_10", "wrn_34_20"]
@@ -52,7 +53,7 @@ class NetworkBlock(AdversarialDefensiveModel):
         layers = []
         for i in range(int(nb_layers)):
             layers.append(block(i == 0 and in_planes or out_planes, out_planes, i == 0 and stride or 1, dropRate))
-        return nn.Sequential(*layers)
+        return Sequential(*layers)
 
     def forward(self, x):
         return self.layer(x)

@@ -19,10 +19,19 @@ class AdversarialDefensiveModel(ADType, nn.Module):
         
     def attack(self, mode: bool = True) -> None:
         # enter attacking mode
+        # for adversary only
         self.attacking = mode
         for module in self.children():
             if isinstance(module, ADType):
                 module.attack(mode)
+
+    def defend(self, mode: bool = True) -> None:
+        # enter defense mode
+        # for some special techniques
+        self.defending = mode
+        for module in self.children():
+            if isinstance(module, ADType):
+                module.defend(mode)
 
 
 

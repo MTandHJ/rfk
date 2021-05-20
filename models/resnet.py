@@ -10,6 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .base import AdversarialDefensiveModel
+from .layerops import Sequential
 
 
 
@@ -25,7 +26,7 @@ def conv1x1(in_channels, out_channels, stride=1):
 
 
 
-class BasicBlock(nn.Module):
+class BasicBlock(AdversarialDefensiveModel):
 
     def __init__(
         self, in_channels, out_channels,
@@ -85,7 +86,7 @@ class ResNet(AdversarialDefensiveModel):
         for _ in range(num_blocks-1):
             layers.append(block(out_channels, out_channels))
         
-        return nn.Sequential(*layers)
+        return Sequential(*layers)
 
     def forward(self, inputs):
         x = F.relu(self.bn0(self.conv0(inputs)))

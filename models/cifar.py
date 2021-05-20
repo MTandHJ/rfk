@@ -4,6 +4,7 @@
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
+from .layerops import Sequential
 
 
 
@@ -13,7 +14,7 @@ class CIFAR(AdversarialDefensiveModel):
     def __init__(self, dim_feature=256, num_classes=10):
         super(CIFAR, self).__init__()
 
-        self.conv = nn.Sequential(  # 3 x 32 x 32
+        self.conv = Sequential(  # 3 x 32 x 32
             nn.Conv2d(3, 64, 3),  # 64 x 30 x 30
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
@@ -30,7 +31,7 @@ class CIFAR(AdversarialDefensiveModel):
             nn.MaxPool2d(2)  # 128 x 5 x 5
         )
 
-        self.dense = nn.Sequential(
+        self.dense = Sequential(
             nn.Linear(128 * 5 * 5, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(inplace=True),

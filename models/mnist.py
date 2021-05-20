@@ -8,6 +8,7 @@
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
+from .layerops import Sequential
 
 
 
@@ -16,7 +17,7 @@ class MNIST(AdversarialDefensiveModel):
     def __init__(self, dim_feature=200, num_classes=10):
         super(MNIST, self).__init__()
 
-        self.conv = nn.Sequential( # 1 x 28 x 28
+        self.conv = Sequential( # 1 x 28 x 28
             nn.Conv2d(1, 32, 3),   # 32 x 26 x 26
             nn.BatchNorm2d(32),
             nn.ReLU(inplace=True),
@@ -33,7 +34,7 @@ class MNIST(AdversarialDefensiveModel):
             nn.MaxPool2d(2)        # 64 x 4 x 4
         )
 
-        self.dense = nn.Sequential(
+        self.dense = Sequential(
             nn.Linear(64 * 4 * 4, 200),
             nn.ReLU(inplace=True),
             nn.BatchNorm1d(200),

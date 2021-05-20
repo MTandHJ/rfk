@@ -9,6 +9,7 @@ AidenDurrant: https://raw.githubusercontent.com/AidenDurrant/MoCo-Pytorch/master
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
+from .layerops import Sequential
 
 
 
@@ -179,7 +180,7 @@ class ResNet(AdversarialDefensiveModel):
             self.dilation *= stride
             stride = 1
         if stride != 1 or self.inplanes != planes * block.expansion:
-            downsample = nn.Sequential(
+            downsample = Sequential(
                 conv1x1(self.inplanes, planes * block.expansion, stride),
                 norm_layer(planes * block.expansion),
             )
@@ -193,7 +194,7 @@ class ResNet(AdversarialDefensiveModel):
                                 base_width=self.base_width, dilation=self.dilation,
                                 norm_layer=norm_layer))
 
-        return nn.Sequential(*layers)
+        return Sequential(*layers)
 
     def forward(self, x):
         x = self.conv1(x) # 64 x 32 x 32
