@@ -9,6 +9,7 @@ import eagerpy as ep
 import os
 
 from models.base import AdversarialDefensiveModel
+from models.logger import Loggers
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
 from .loss_zoo import cross_entropy, kl_divergence
@@ -254,32 +255,29 @@ class AdversaryForValid(Adversary):
         accuracy = (predictions == labels_)
         return cast(int, accuracy.sum().item())
 
-    def success(
-        self, 
-        inputs: torch.Tensor, criterion: Any, 
-        epsilon: Union[None, float, List[float]] = None
-    ) -> int:
-
-        _, _, is_adv = self.attack(inputs, criterion, epsilon)
-        return cast(int, is_adv.sum().item())
-
     def evaluate(
         self, 
         dataloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
+        logger: Loggers,
         epsilon: Union[None, float, List[float]] = None,
-        *, defending: bool = True
+        *, defending: bool = True, logging: bool = False
     ) -> Tuple[float, float]:
 
         datasize = len(dataloader.dataset) # type: ignore
-        running_accuracy = 0
-        running_success = 0
+        acc_nat = 0
+        acc_adv = 0
         self.model.defend(defending) # enter 'defending' mode
         for inputs, labels in dataloader:
+            logger.record(False)
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            running_accuracy += self.accuracy(inputs, labels)
-            running_success += self.success(inputs, labels, epsilon)
-        return running_accuracy / datasize, running_success / datasize
+            _, clipped, _ = self.attack(inputs, labels, epsilon)
+            logger.record(logging) # wheather logging statstics ...
+            logger.nora(True) # taking natural samples as inputs
+            acc_nat += self.accuracy(inputs, labels)
+            logger.nora(False) # taking adversarial samples as inputs
+            acc_adv += self.accuracy(clipped, labels)
+        return acc_nat / datasize, acc_adv / datasize
 
 
 

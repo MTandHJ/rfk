@@ -3,7 +3,7 @@
 
 
 
-from typing import Optional, Any, Union, List
+from typing import Optional, Any, Union, List, NoReturn
 import torch
 import torch.nn as nn
 import numpy as np
@@ -13,6 +13,7 @@ import random
 import os
 import sys
 import copy
+import pickle
 
 from .config import SAVED_FILENAME
 
@@ -209,6 +210,31 @@ def load_checkpoint(
     lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
     epoch = checkpoint['epoch']
     return epoch
+
+def export_pickle(data: Dict, file_: str) -> NoReturn:
+    print(">>> Export File ...")
+    fh = None
+    try:
+        fh = open(file_, "wb")
+        pickle.dump(data, fh, pickle.HIGHEST_PROTOCOL)
+    except (EnvironmentError, pickle.PicklingError) as err:
+        ExportError_ = type("ExportError", (Exception,), dict())
+        raise ExportError_(f"Export Error: {err}")
+    finally:
+        if fh is not None:
+            fh.close()
+
+def import_pickle(file_: str) -> NoReturn:
+    print(">>> Import File ...")
+    fh = None
+    try:
+        fh = open(file_, "rb")
+        return pickle.load(fh)
+    except (EnvironmentError, pickle.UnpicklingError) as err:
+        raise ImportError(f"Import Error: {err}")
+    finally:
+        if fh is not None:
+            fh.close()
 
 def set_seed(seed: int) -> None:
     from torch.backends import cudnn

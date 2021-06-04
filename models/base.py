@@ -16,7 +16,6 @@ class AdversarialDefensiveModel(ADType, nn.Module):
         # and attacking are different.
         self.attacking: bool = False
         self.defending: bool = True
-
         
     def attack(self, mode: bool = True) -> None:
         # enter attacking mode

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 
+from collections import defaultdict
+from os import stat
 from typing import Tuple
 import argparse
 from src.loadopts import *
@@ -46,6 +48,7 @@ parser.add_argument("--transform", type=str, default='default',
 parser.add_argument("--resume", action="store_true", default=False)
 parser.add_argument("--progress", action="store_true", default=False, 
                 help="show the progress if true")
+parser.add_argument("-slg", "--stats_log", action="store_true", default=False)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="AT")
 opts = parser.parse_args()
@@ -57,6 +60,7 @@ def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach, AdversaryForTrain
     from src.utils import gpu, set_seed, load_checkpoint
+    from models.logger import Loggers, BlankLoggers
 
     cfg = Config()
     set_seed(opts.seed)
@@ -64,6 +68,12 @@ def load_cfg() -> Tuple[Config, str]:
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
     device = gpu(model)
+
+    if opts.stats_log:
+        print(">>> Applying Statstics Logging ...")
+        cfg['logger'] = Loggers(model)
+    else:
+        cfg['logger'] = BlankLoggers(None)
 
     # load the dataset
     trainset = load_dataset(
@@ -141,25 +151,28 @@ def load_cfg() -> Tuple[Config, str]:
 
 
 def evaluate(
-    valider, trainloader, testloader,
-    acc_logger, rob_logger, writter,
+    valider, stats_logger, trainloader, testloader,
+    acc_logger, rob_logger, writter, log_path,
     epoch = 8888
 ):
-    train_accuracy, train_success = valider.evaluate(trainloader)
-    valid_accuracy, valid_success = valider.evaluate(testloader)
-    print(f"Train >>> [TA: {train_accuracy:.5f}]    [RA: {1 - train_success:.5f}]")
-    print(f"Test. >>> [TA: {valid_accuracy:.5f}]    [RA: {1 - valid_success:.5f}]")
-    writter.add_scalars("Accuracy", {"train":train_accuracy, "valid":valid_accuracy}, epoch)
-    writter.add_scalars("Success", {"train":train_success, "valid":valid_success}, epoch)
+    train_acc_nat, train_acc_adv = valider.evaluate(trainloader, stats_logger, logging=False)
+    valid_acc_nat, valid_acc_adv = valider.evaluate(testloader, stats_logger, logging=True)
+    print(f"Train >>> [TA: {train_acc_nat:.5f}]    [RA: {train_acc_adv:.5f}]")
+    print(f"Test. >>> [TA: {valid_acc_nat:.5f}]    [RA: {valid_acc_adv:.5f}]")
+    writter.add_scalars("Accuracy", {"train":train_acc_nat, "valid":valid_acc_nat}, epoch)
+    writter.add_scalars("Robustness", {"train":train_acc_adv, "valid":valid_acc_adv}, epoch)
 
-    acc_logger.train(data=train_accuracy, T=epoch)
-    acc_logger.valid(data=valid_accuracy, T=epoch)
-    rob_logger.train(data=1 - train_success, T=epoch)
-    rob_logger.valid(data=1 - valid_success, T=epoch)
+    acc_logger.train(data=train_acc_nat, T=epoch)
+    acc_logger.valid(data=valid_acc_nat, T=epoch)
+    rob_logger.train(data=train_acc_adv, T=epoch)
+    rob_logger.valid(data=valid_acc_adv, T=epoch)
+
+    stats_logger.save(log_path=log_path, T=epoch)
+    stats_logger.reset()
 
 
 def main(
-    coach, attacker, valider, 
+    coach, attacker, valider, stats_logger,
     trainloader, testloader, start_epoch, 
     info_path, log_path
 ):  
@@ -185,9 +198,10 @@ def main(
 
         if epoch % PRINT_FREQ == 0:
             evaluate(
-                valider=valider, trainloader=trainloader, testloader=testloader,
+                valider=valider, stats_logger=stats_logger, 
+                trainloader=trainloader, testloader=testloader,
                 acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
-                epoch=epoch
+                log_path=log_path, epoch=epoch
             )
             
 
@@ -196,9 +210,10 @@ def main(
 
 
     evaluate(
-        valider=valider, trainloader=trainloader, testloader=testloader,
+        valider=valider, stats_logger=stats_logger,
+        trainloader=trainloader, testloader=testloader,
         acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
-        epoch=opts.epochs
+        log_path=log_path, epoch=opts.epochs
     )
 
     acc_logger.plotter.plot()
