@@ -4,7 +4,7 @@
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
-from .layerops import Sequential
+from .layerops import Sequential, MarkLayer
 
 
 
@@ -20,6 +20,7 @@ class CIFAR(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 3),  # 64 x 28 x 28
             nn.BatchNorm2d(64),
+            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2),  # 64 x 14 x 14
             nn.Conv2d(64, 128, 3),  # 128 x 12 x 12
@@ -27,6 +28,7 @@ class CIFAR(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(128, 128, 3),  # 128 x 10 x 10
             nn.BatchNorm2d(128),
+            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2)  # 128 x 5 x 5
         )

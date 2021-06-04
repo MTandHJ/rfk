@@ -9,7 +9,7 @@ AidenDurrant: https://raw.githubusercontent.com/AidenDurrant/MoCo-Pytorch/master
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
-from .layerops import Sequential
+from .layerops import Sequential, MarkLayer
 
 
 
@@ -46,6 +46,7 @@ class BasicBlock(AdversarialDefensiveModel):
         self.bn2 = norm_layer(planes)
         self.downsample = downsample
         self.stride = stride
+        self.mark = MarkLayer()
 
     def forward(self, x):
         identity = x
@@ -63,7 +64,7 @@ class BasicBlock(AdversarialDefensiveModel):
         out += identity
         out = self.relu(out)
 
-        return out
+        return self.mark(out)
 
 
 class Bottleneck(AdversarialDefensiveModel):
@@ -91,6 +92,7 @@ class Bottleneck(AdversarialDefensiveModel):
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
         self.stride = stride
+        self.mark = MarkLayer()
 
     def forward(self, x):
         identity = x
@@ -112,7 +114,7 @@ class Bottleneck(AdversarialDefensiveModel):
         out += identity
         out = self.relu(out)
 
-        return out
+        return self.mark(out)
 
 
 class ResNet(AdversarialDefensiveModel):

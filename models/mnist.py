@@ -8,7 +8,7 @@
 import torch
 import torch.nn as nn
 from .base import AdversarialDefensiveModel
-from .layerops import Sequential
+from .layerops import Sequential, MarkLayer
 
 
 
@@ -23,6 +23,7 @@ class MNIST(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(32, 32, 3),  # 32 x 24 x 24
             nn.BatchNorm2d(32),
+            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2),       # 32 x 12 x 12
             nn.Conv2d(32, 64, 3),  # 64 x 10 x 10
@@ -30,6 +31,7 @@ class MNIST(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 3),  # 64 x 8 x 8
             nn.BatchNorm2d(64),
+            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2)        # 64 x 4 x 4
         )

@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .base import AdversarialDefensiveModel
-from .layerops import Sequential
+from .layerops import MarkLayer, Sequential
 
 
 
@@ -39,12 +39,13 @@ class BasicBlock(AdversarialDefensiveModel):
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.activation = nn.ReLU()
         self.shortway = shortcut
+        self.mark = MarkLayer()
 
     def forward(self, x):
         temp = self.activation(self.bn1(self.conv1(x)))
         outs = self.bn2(self.conv2(temp))
         outs2 = x if self.shortway is None else self.shortway(x)
-        return self.activation(outs + outs2)
+        return self.mark(self.activation(outs + outs2))
 
 
 class ResNet(AdversarialDefensiveModel):

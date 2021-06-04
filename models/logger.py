@@ -11,6 +11,7 @@ from collections import defaultdict
 from functools import partial
 
 from .base import AdversarialDefensiveModel
+from .layerops import MarkLayer
 from src.dict2obj import Config
 from src.utils import export_pickle, import_pickle
 
@@ -19,7 +20,7 @@ from src.utils import export_pickle, import_pickle
 
 class BaseLogger:
 
-    LAYERS = (nn.AdaptiveAvgPool2d, nn.Linear)
+    LAYERS = (MarkLayer, nn.AdaptiveAvgPool2d, nn.Linear)
     FTYPES = ('max', 'min', 'mean', 'norm2', 'norm1', 'norminf')
 
     def __init__(
