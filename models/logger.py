@@ -200,10 +200,15 @@ class Loggers:
                 infos[logger.name][key] = value
         return infos
 
-    def save(self, log_path: str, filename = "epoch{0}.stats", *, T: int = 8888):
-        file_ = os.path.join(log_path, filename.format(T))
+    def save(self, log_path: str, filename = "model.stats", *, T: int = 8888):
+        file_ = os.path.join(log_path, filename)
+        try:
+            data = import_pickle(file_)
+        except:
+            data = dict()
+        data[T] = self.infos_dict
         export_pickle(
-            self.infos_dict,
+            data,
             file_
         )
             
@@ -212,5 +217,5 @@ class BlankLoggers(Loggers):
     def __init__(self, model=None) -> None:
         super(BlankLoggers, self).__init__(nn.Identity())
 
-    def save(self, log_path: str, filename = "epoch{0}.stats", *, T: int = 8888):
+    def save(self, log_path: str, filename = "model.stats", *, T: int = 8888):
         pass

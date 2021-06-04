@@ -3,7 +3,7 @@
 
 
 
-from typing import Optional, Any, Union, List, NoReturn
+from typing import Optional, Any, Union, List, NoReturn, Dict
 import torch
 import torch.nn as nn
 import numpy as np
@@ -224,7 +224,7 @@ def export_pickle(data: Dict, file_: str) -> NoReturn:
         if fh is not None:
             fh.close()
 
-def import_pickle(file_: str) -> NoReturn:
+def import_pickle(file_: str) -> Dict:
     print(">>> Import File ...")
     fh = None
     try:

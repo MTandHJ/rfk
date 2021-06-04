@@ -71,9 +71,9 @@ def load_cfg() -> Tuple[Config, str]:
 
     if opts.stats_log:
         print(">>> Applying Statstics Logging ...")
-        cfg['logger'] = Loggers(model)
+        cfg['stats_logger'] = Loggers(model)
     else:
-        cfg['logger'] = BlankLoggers(None)
+        cfg['stats_logger'] = BlankLoggers(None)
 
     # load the dataset
     trainset = load_dataset(
