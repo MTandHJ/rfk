@@ -193,10 +193,15 @@ class UnitPlot:
         tight_layout: bool = True,
         **kwargs: "other kwargs of plg.savefig"
     ) -> None:
+        try:
+            os.mkdir(self.root)
+        except FileExistsError:
+            pass
+        
         if tight_layout:
             plt.tight_layout()
         plt.savefig(
-            filename,
+            os.path.join(self.root, filename),
             bbox_inches=bbox_inches,
             **kwargs
         )

@@ -50,7 +50,7 @@ class BaseLogger:
         except_ = set(except_)
         ndim = x.ndim
         dims = set(range(0, ndim))
-        dims - except_
+        dims = dims - except_
         return tuple(dims)
 
     @staticmethod
@@ -91,18 +91,18 @@ class BaseLogger:
             func(logger, inputs, outputs)
 
     @torch.no_grad()
-    def log(self, inputs: torch.Tensor, outputs: torch.Tensor) -> int:
+    def log(self, inputs: Tuple, outputs: torch.Tensor) -> int:
         if not self.logging:
             return 0
-        inputs = inputs.clone().detach().cpu().numpy()
+        inputs = inputs[0].clone().detach().cpu().numpy()
         outputs = outputs.clone().detach().cpu().numpy()
         self.step(inputs, outputs)
         return 1
 
 class DiffLogger(BaseLogger):
 
-    LAYERS = (nn.AdaptiveAvgPool2d, nn.Linear)
-    FTYPES = ('max', 'min', 'mean', 'norm2', 'norm1', 'norminf')
+    # LAYERS = (nn.AdaptiveAvgPool2d, nn.Linear)
+    # FTYPES = ('max', 'min', 'mean', 'norm2', 'norm1', 'norminf')
 
     def __init__(
         self, module: nn.Module, name: str
@@ -130,10 +130,10 @@ class DiffLogger(BaseLogger):
             func(logger, inputs, outputs)
 
     @torch.no_grad()
-    def log(self, inputs: torch.Tensor, outputs: torch.Tensor) -> int:
+    def log(self, inputs: Tuple, outputs: torch.Tensor) -> int:
         if not self.logging:
             return 0
-        inputs = inputs.clone().detach().cpu().numpy()
+        inputs = inputs[0].clone().detach().cpu().numpy()
         outputs = outputs.clone().detach().cpu().numpy()
         if self.nora:
             assert not self.flag_nat, \
@@ -162,6 +162,7 @@ class Loggers:
     def __init__(self, model: AdversarialDefensiveModel) -> None:
         self.loggers = []
         self.model = model
+        self.register()
     
     def record(self, mode: bool = True):
         for logger in self.loggers:
@@ -187,11 +188,11 @@ class Loggers:
                 )
                 self.loggers.append(logger)
             if isinstance(m, DiffLogger.LAYERS):
-                logger = BaseLogger(m, name)
+                logger = DiffLogger(m, name)
                 m.register_forward_hook(
                     hook=partial(hook, logger=logger)
                 )
-                self.logger.append(logger)
+                self.loggers.append(logger)
     @property 
     def infos_dict(self):
         infos = defaultdict(dict)
