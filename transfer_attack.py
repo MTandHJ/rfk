@@ -40,7 +40,7 @@ opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
 
 
-def load_cfg() -> Tuple[Config, str]:
+def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import FBDefense, AdversaryForValid
     from src.utils import gpu, load, set_seed
@@ -78,11 +78,10 @@ def load_cfg() -> Tuple[Config, str]:
         train=False,
         show_progress=opts.progress
     )
-    normalizer = load_normalizer(dataset_type=opts.dataset)
 
     # generate the log path
     mix_model = opts.source_model + "---" + opts.target_model
-    _, log_path = generate_path(
+    _, cfg['log_path'] = generate_path(
         method=METHOD, dataset_type=opts.dataset,
         model=mix_model, description=opts.description
     )
@@ -104,9 +103,9 @@ def load_cfg() -> Tuple[Config, str]:
         bounds=bounds, preprocessing=preprocessing
     )
 
-    return cfg, log_path
+    return cfg
 
-def main(defender, attacker, testloader):
+def main(defender, attacker, testloader, log_path):
     from src.criteria import TransferClassification
     from src.utils import distance_lp
     running_success = 0.
@@ -143,10 +142,10 @@ def main(defender, attacker, testloader):
 if __name__ == "__main__":
     from torch.utils.tensorboard import SummaryWriter
     from src.utils import mkdirs, readme
-    cfg, log_path = load_cfg()
-    mkdirs(log_path)
-    readme(log_path, opts, mode="a")
-    writter = SummaryWriter(log_dir=log_path, filename_suffix=METHOD)
+    cfg = load_cfg()
+    mkdirs(cfg.log_path)
+    readme(cfg.log_path, opts, mode="a")
+    writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
 
     main(**cfg)
 

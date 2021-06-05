@@ -118,7 +118,7 @@ LEARNING_POLICY = {
    "default": (
         "MultiStepLR",
         Config(
-            milestones=[100, 150],
+            milestones=[50, 75],
             gamma=0.1,
             prefix="Default leaning policy will be applied:\n"
         )
