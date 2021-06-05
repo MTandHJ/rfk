@@ -1,5 +1,6 @@
 
 
+from freeplot.utils import axis
 from typing import Dict
 import numpy as np
 
@@ -20,24 +21,24 @@ class BaseVisualizer:
         self.shape = (len(self.KINDS), len(self.epochs))
         self.figsize = (len(self.epochs) * 2.3, len(self.KINDS) * 2)
 
-    def violinplot(self, ftype: str = 'norm2'):
+    def violinplot(self, ftype: str = 'norm2', show_layers: bool = False):
         fp = FreePlot(
             shape=self.shape,
             figsize=self.figsize,
             sharey=False,
             dpi=200
         )
+
+        x = self.layers if show_layers else None
         
-        cur_index = 0
         flag = True
-        for kind in self.KINDS:
-            fp[cur_index].set(ylabel=kind)
-            for epoch in self.epochs:
+        for i, kind in enumerate(self.KINDS):
+            for j, epoch in enumerate(self.epochs):
                 data = [np.array(self.data[epoch][layer][kind][ftype]) for layer in self.layers]
-                fp.violinplot(x=self.layers, y=data, index=cur_index)
+                fp.violinplot(x=x, y=data, index=(i, j))
                 if flag:
-                    fp[cur_index].set(title=epoch)
-                cur_index += 1
+                    fp[i, j].set(title=epoch)
+            fp.set_label(kind, index=(i, 0), axis='y')
             flag = False
         return fp
         

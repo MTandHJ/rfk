@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 
-from functools import partial
-from typing import Tuple
 import argparse
 import os
 
@@ -43,12 +41,14 @@ def main(visualizer, ftypes):
     import matplotlib.pyplot as plt
     for ftype in ftypes:
         visualizer.violinplot(ftype=ftype)
+        path = os.path.join(opts.log_path, opts.description)
         try:
-            os.mkdir(opts.log_path)
+            os.mkdir(path)
         except FileExistsError:
             pass
+        plt.tight_layout()
         plt.savefig(
-            os.path.join(opts.log_path, "_".join((opts.description, ftype))),
+            os.path.join(path, ftype),
             bbox_inches = 'tight'
         )
    

@@ -112,8 +112,7 @@ class ImageMeter:
             x = meter.timeline
             y = meter.history
             self.fp.lineplot(x, y, label=meter.name)
-        self.fp[0].legend()
-        self.fp.savefig
+        self.fp[0, 0].legend()
         plt.tight_layout()
     
     def save(self, writter: 'SummaryWriter', postfix: str = '') -> None:
