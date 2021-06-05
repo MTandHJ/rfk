@@ -67,6 +67,8 @@ class ResNet(AdversarialDefensiveModel):
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(64, num_classes)
+        
+        self.mark = MarkLayer()
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -90,6 +92,7 @@ class ResNet(AdversarialDefensiveModel):
         return Sequential(*layers)
 
     def forward(self, inputs):
+        inputs = self.mark(inputs)
         x = F.relu(self.bn0(self.conv0(inputs)))
         l1 = self.layer1(x)
         l2 = self.layer2(l1)

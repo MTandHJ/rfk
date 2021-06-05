@@ -157,6 +157,8 @@ class ResNet(AdversarialDefensiveModel):
 
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
+        self.mark = MarkLayer()
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -199,6 +201,7 @@ class ResNet(AdversarialDefensiveModel):
         return Sequential(*layers)
 
     def forward(self, x):
+        x = self.mark(x)
         x = self.conv1(x) # 64 x 32 x 32
         x = self.bn1(x) 
         x = self.relu(x)

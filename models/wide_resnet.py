@@ -83,6 +83,8 @@ class WideResNet(AdversarialDefensiveModel):
         self.fc = nn.Linear(nChannels[3], num_classes)
         self.nChannels = nChannels[3]
 
+        self.mark = MarkLayer()
+
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
@@ -94,6 +96,7 @@ class WideResNet(AdversarialDefensiveModel):
                 m.bias.data.zero_()
 
     def forward(self, x):
+        x = self.mark(x)
         x = self.conv1(x)
         x = self.block1(x)
         x = self.block2(x)

@@ -43,7 +43,10 @@ class CIFAR(AdversarialDefensiveModel):
         self.activation = nn.ReLU(inplace=True)
         self.fc = nn.Linear(dim_feature, num_classes)
 
+        self.mark = MarkLayer()
+
     def forward(self, x):
+        x = self.mark(x)
         x = self.conv(x).flatten(start_dim=1)
         features = self.activation(self.dense(x))
         outs = self.fc(features)
