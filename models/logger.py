@@ -14,6 +14,7 @@ from .base import AdversarialDefensiveModel
 from .layerops import MarkLayer
 from src.dict2obj import Config
 from src.utils import export_pickle, import_pickle
+from src.config import BASE_FTYPES, STATS_FILENAME
 
 
 
@@ -21,7 +22,7 @@ from src.utils import export_pickle, import_pickle
 class BaseLogger:
 
     LAYERS = (MarkLayer, nn.AdaptiveAvgPool2d, nn.Linear)
-    FTYPES = ('max', 'min', 'mean', 'norm2', 'norm1', 'norminf')
+    FTYPES = BASE_FTYPES
 
     def __init__(
         self, module: nn.Module, name: str
@@ -126,7 +127,7 @@ class DiffLogger(BaseLogger):
         self.flag_adv: bool = False
 
     def step(self, inputs: np.ndarray, outputs: np.ndarray) -> None:
-        logger= self.logger.diff
+        logger = self.logger.diff
         for func in self.ftypes:
             func(logger, inputs, outputs)
 
@@ -202,7 +203,7 @@ class Loggers:
                 infos[logger.name][key] = value
         return infos
 
-    def save(self, log_path: str, filename = "model.stats", *, T: int = 8888):
+    def save(self, log_path: str, filename = STATS_FILENAME, *, T: int = 8888):
         file_ = os.path.join(log_path, filename)
         try:
             data = import_pickle(file_)
@@ -219,5 +220,5 @@ class BlankLoggers(Loggers):
     def __init__(self, model=None) -> None:
         super(BlankLoggers, self).__init__(nn.Identity())
 
-    def save(self, log_path: str, filename = "model.stats", *, T: int = 8888):
+    def save(self, log_path: str, filename = STATS_FILENAME, *, T: int = 8888):
         pass

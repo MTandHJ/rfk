@@ -38,6 +38,11 @@ INFO_PATH = "./infos/{method}/{dataset}-{model}/{description}"
 LOG_PATH = "./logs/{method}/{dataset}-{model}/{description}-{time}"
 TIMEFMT = "%m%d%H"
 
+# for visualization
+BASE_FTYPES = ('max', 'min', 'mean', 'norm1', 'norm2', 'norminf')
+FTYPES = BASE_FTYPES
+STATS_FILENAME = "model.stats"
+
 TRANSFORMS = {
     "mnist": {
         'default': T.ToTensor()

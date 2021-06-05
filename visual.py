@@ -3,7 +3,7 @@
 
 import argparse
 import os
-
+from  src.config import FTYPES, STATS_FILENAME
 
 METHOD = "Visualization"
 FMT = "{description}"
@@ -11,7 +11,7 @@ FMT = "{description}"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("log_path", type=str)
-parser.add_argument("--ftype", type=str, choices=('max', 'min', 'mean', 'norm1', 'norm2', 'norminf', 'all'), default='all')
+parser.add_argument("--ftype", type=str, choices=FTYPES, default='all')
 parser.add_argument("-m", "--description", type=str, default="vvv")
 opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
@@ -27,7 +27,7 @@ def load_cfg() -> 'Config':
     cfg = Config()
     
     # load data
-    file_ = os.path.join(opts.log_path, "model.stats")
+    file_ = os.path.join(opts.log_path, STATS_FILENAME)
     data = import_pickle(file_=file_)
     cfg['visualizer'] = BaseVisualizer(data)
     if opts.ftype == "all":
