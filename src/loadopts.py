@@ -9,6 +9,7 @@ import time
 from tqdm import tqdm
 
 
+from models.base import AdversarialDefensiveModel
 from .base import AdversaryForValid
 from .dict2obj import Config
 from .config import *
@@ -48,6 +49,7 @@ def load_model(model_type: str) -> Callable[..., torch.nn.Module]:
     srns = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnext50_32x4d']
     wrns = ['wrn_28_10', 'wrn_34_10', 'wrn_34_20']
 
+    model: Callable[..., AdversarialDefensiveModel]
     if model_type == "mnist":
         from models.mnist import MNIST
         model = MNIST
@@ -74,6 +76,7 @@ def load_loss_func(loss_type: str) -> Callable:
     cross_entropy: the softmax cross entropy loss
     kl_loss: kl divergence
     """
+    loss_func: Callable[..., torch.Tensor]
     if loss_type == "cross_entropy":
         from .loss_zoo import cross_entropy
         loss_func = cross_entropy
