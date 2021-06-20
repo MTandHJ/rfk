@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 
-from typing import Tuple
 import torch
 import argparse
 from src.loadopts import *
