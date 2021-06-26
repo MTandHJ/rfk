@@ -295,19 +295,6 @@ def load_learning_policy(
     return learning_policy
 
 
-def _get_preprocessing(dataset_type: str) -> Optional[Dict]:
-    preprocessing = None
-    if dataset_type in ("cifar10", "cifar100"):
-        mean = MEANS[dataset_type]
-        std = STDS[dataset_type]
-        preprocessing = dict(
-            mean=mean,
-            std=std,
-            axis=-3
-        )
-    return preprocessing
-
-
 def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     """
     pgd-linf: \ell_{\infty} rel_stepsize=stepsize, steps=steps;
@@ -396,23 +383,21 @@ def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     return attack
 
 
-def load_attacks(
-    attack_type: str, dataset_type: str, stepsize: float, steps: int
-) -> "Tuple[attack, bounds, preprocessing]":
+def load_attack(
+    attack_type: str, stepsize: float, steps: int
+) -> fb.attacks.Attack:
     attack = _attack(attack_type, stepsize, steps)
-    preprocessing = _get_preprocessing(dataset_type)
-    bounds = BOUNDS
-    return attack, bounds, preprocessing
+    return attack
 
 
 def load_valider(
     model: torch.nn.Module, device: torch.device, dataset_type: str
 ) -> AdversaryForValid:
     cfg, epsilon = VALIDER[dataset_type]
-    attack, bounds, preprocessing = load_attacks(dataset_type=dataset_type, **cfg)
+    attack = load_attack(**cfg)
     valider = AdversaryForValid(
-        model, attack, device, 
-        bounds, preprocessing, epsilon
+        model=model, attacker=attack, 
+        device=device, epsilon=epsilon
     )
     return valider
 

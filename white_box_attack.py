@@ -48,6 +48,7 @@ def load_cfg() -> 'Config':
 
     # load the model
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
+    model.set_normalizer(opts.dataset)
     device = gpu(model)
     load(
         model=model, 
@@ -75,15 +76,16 @@ def load_cfg() -> 'Config':
     )
 
     # set the attacker
-    attack, bounds, preprocessing = load_attacks(
-        attack_type=opts.attack, dataset_type=opts.dataset, 
-        stepsize=opts.stepsize, steps=opts.steps
+    attack = load_attack(
+        attack_type=opts.attack,
+        stepsize=opts.stepsize, 
+        steps=opts.steps
     )
 
     epsilons = torch.linspace(opts.epsilon_min, opts.epsilon_max, opts.epsilon_times).tolist()
     cfg['attacker'] = AdversaryForValid(
-        model=model, attacker=attack, device=device,
-        bounds=bounds, preprocessing=preprocessing, epsilon=epsilons
+        model=model, attacker=attack, 
+        device=device, epsilon=epsilons
     )
 
     return cfg

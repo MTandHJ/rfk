@@ -92,7 +92,8 @@ NUM_WORKERS = 3
 PIN_MEMORY = True
 
 # basic properties of inputs
-BOUNDS = (0, 1)
+BOUNDS = (0, 1) # for fb.attacks.Attack
+PREPROCESSING = None # for fb.attacks.Attack
 MEANS = {
     "mnist": None,
     "cifar10": [0.4914, 0.4824, 0.4467],

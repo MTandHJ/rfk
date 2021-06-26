@@ -63,6 +63,7 @@ def load_cfg() -> Tuple[Config, str]:
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
+    model.set_normalizer(opts.dataset)
     device = gpu(model)
 
     # load the dataset
@@ -88,7 +89,6 @@ def load_cfg() -> Tuple[Config, str]:
         train=False,
         show_progress=opts.progress
     )
-    normalizer = load_normalizer(dataset_type=opts.dataset)
     
     # load the optimizer and learning_policy
     optimizer = load_optimizer(
@@ -118,19 +118,20 @@ def load_cfg() -> Tuple[Config, str]:
     cfg['coach'] = Coach(
         model=model, device=device, 
         loss_func=load_loss_func(opts.loss), 
-        normalizer=normalizer, optimizer=optimizer, 
+        optimizer=optimizer, 
         learning_policy=learning_policy
     )
 
     # set the attack
-    attack, bounds, preprocessing = load_attacks(
-        attack_type=opts.attack, dataset_type=opts.dataset, 
-        stepsize=opts.stepsize, steps=opts.steps
+    attack = load_attack(
+        attack_type=opts.attack,
+        stepsize=opts.stepsize, 
+        steps=opts.steps
     )
 
     cfg['attacker'] = AdversaryForTrain(
-        model=model, attacker=attack, device=device, 
-        bounds=bounds, preprocessing=preprocessing, epsilon=opts.epsilon
+        model=model, attacker=attack, 
+        device=device, epsilon=opts.epsilon
     )
 
     cfg['valider'] = load_valider(

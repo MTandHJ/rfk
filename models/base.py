@@ -1,17 +1,20 @@
 
 
-
+from typing import Any
+import torch
 import torch.nn as nn
 import abc
 
+from src.loadopts import load_normalizer
+
 class ADType(abc.ABC): ...
 
-class AdversarialDefensiveModel(ADType, nn.Module):
+class AdversarialDefensiveModule(ADType, nn.Module):
     """
     Define some basic properties.
     """
     def __init__(self) -> None:
-        super(AdversarialDefensiveModel, self).__init__()
+        super(AdversarialDefensiveModule, self).__init__()
         # Some model's outputs for training(evaluating) 
         # and attacking are different.
         self.attacking: bool = False
@@ -33,13 +36,26 @@ class AdversarialDefensiveModel(ADType, nn.Module):
             if isinstance(module, ADType):
                 module.defend(mode)
 
+class ADArch(AdversarialDefensiveModule):
+
+    def set_normalizer(self, dataset: str) -> None:
+        self.normalizer = load_normalizer(dataset)
+
+    def __call__(self, inputs: torch.Tensor, **kwargs: Any) -> Any:
+        try:
+            inputs = self.normalizer(inputs)
+        except AttributeError as e:
+            errors = str(e) + "\n >>> You shall set normalizer manually by calling 'set_normalizer' ..."
+            raise AttributeError(errors)
+        return super().__call__(inputs, **kwargs)
+
 
 
 if __name__ == "__main__":
     
-    model = AdversarialDefensiveModel()
-    model.child1 = AdversarialDefensiveModel()
-    model.child2 = AdversarialDefensiveModel()
+    model = AdversarialDefensiveModule()
+    model.child1 = AdversarialDefensiveModule()
+    model.child2 = AdversarialDefensiveModule()
 
     print(model.attack)
     model.attack()

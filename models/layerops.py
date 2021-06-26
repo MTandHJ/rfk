@@ -1,13 +1,13 @@
 
 import torch
 import torch.nn as nn
-from .base import AdversarialDefensiveModel
+from .base import AdversarialDefensiveModule
 
 
-class Sequential(nn.Sequential, AdversarialDefensiveModel): ...
-class ModuleList(nn.ModuleList, AdversarialDefensiveModel): ...
+class Sequential(nn.Sequential, AdversarialDefensiveModule): ...
+class ModuleList(nn.ModuleList, AdversarialDefensiveModule): ...
 
-class TriggerBN1d(AdversarialDefensiveModel):
+class TriggerBN1d(AdversarialDefensiveModule):
 
     def __init__(self, num_features: int, **kwargs):
         super(TriggerBN1d, self).__init__()
@@ -27,7 +27,7 @@ class TriggerBN1d(AdversarialDefensiveModel):
             return self.bn_second(x)
 
 
-class TriggerBN2d(AdversarialDefensiveModel):
+class TriggerBN2d(AdversarialDefensiveModule):
     
     def __init__(self, num_features: int, **kwargs):
         super(TriggerBN2d, self).__init__()

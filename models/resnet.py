@@ -9,7 +9,7 @@ Yerlan Idelbayev: https://github.com/akamaster/pytorch_resnet_cifar10/blob/maste
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .base import AdversarialDefensiveModel
+from .base import ADArch, AdversarialDefensiveModule
 from .layerops import Sequential
 
 
@@ -26,7 +26,7 @@ def conv1x1(in_channels, out_channels, stride=1):
 
 
 
-class BasicBlock(AdversarialDefensiveModel):
+class BasicBlock(AdversarialDefensiveModule):
 
     def __init__(
         self, in_channels, out_channels,
@@ -47,7 +47,7 @@ class BasicBlock(AdversarialDefensiveModel):
         return self.activation(outs + outs2)
 
 
-class ResNet(AdversarialDefensiveModel):
+class ResNet(ADArch):
 
     def __init__(
         self, layers, num_classes=10,

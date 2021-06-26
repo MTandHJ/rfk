@@ -3,13 +3,13 @@
 
 import torch
 import torch.nn as nn
-from .base import AdversarialDefensiveModel
+from .base import ADArch
 from .layerops import Sequential
 
 
 
 
-class CIFAR(AdversarialDefensiveModel):
+class CIFAR(ADArch):
 
     def __init__(self, dim_feature=256, num_classes=10):
         super(CIFAR, self).__init__()

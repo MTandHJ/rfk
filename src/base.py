@@ -8,11 +8,11 @@ import foolbox as fb
 import eagerpy as ep
 import os
 
-from models.base import AdversarialDefensiveModel
+from models.base import AdversarialDefensiveModule
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
 from .loss_zoo import cross_entropy, kl_divergence
-from .config import SAVED_FILENAME
+from .config import SAVED_FILENAME, BOUNDS, PREPROCESSING
 
 
 def enter_attack_exit(func) -> Callable:
@@ -29,17 +29,15 @@ def enter_attack_exit(func) -> Callable:
 class Coach:
     
     def __init__(
-        self, model: AdversarialDefensiveModel,
+        self, model: AdversarialDefensiveModule,
         device: torch.device,
         loss_func: Callable, 
-        normalizer: Callable[[torch.Tensor], torch.Tensor],
         optimizer: torch.optim.Optimizer, 
         learning_policy: "learning rate policy"
     ):
         self.model = model
         self.device = device
         self.loss_func = loss_func
-        self.normalizer = normalizer
         self.optimizer = optimizer
         self.learning_policy = learning_policy
         self.loss = AverageMeter("Loss")
@@ -62,7 +60,7 @@ class Coach:
             labels = labels.to(self.device)
 
             self.model.train() # make sure in training mode
-            outs = self.model(self.normalizer(inputs))
+            outs = self.model(inputs)
             loss = self.loss_func(outs, labels)
 
             self.optimizer.zero_grad()
@@ -93,7 +91,7 @@ class Coach:
             _, clipped, _ = attacker(inputs, labels)
             
             self.model.train()
-            outs = self.model(self.normalizer(clipped))
+            outs = self.model(clipped)
             loss = self.loss_func(outs, labels)
 
             self.optimizer.zero_grad()
@@ -122,13 +120,13 @@ class Coach:
 
             with torch.no_grad():
                 self.model.eval()
-                logits = self.model(self.normalizer(inputs)).detach()
+                logits = self.model(inputs).detach()
             criterion = LogitsAllFalse(logits) # perturbed by kl loss
             _, inputs_adv, _ = attacker(inputs, criterion)
             
             self.model.train()
-            logits_clean = self.model(self.normalizer(inputs))
-            logits_adv = self.model(self.normalizer(inputs_adv))
+            logits_clean = self.model(inputs)
+            logits_adv = self.model(inputs_adv)
             loss_clean = cross_entropy(logits_clean, labels)
             loss_adv = kl_divergence(logits_adv, logits_clean)
             loss = loss_clean + leverage * loss_adv
@@ -153,8 +151,8 @@ class FBDefense:
         self, 
         model: nn.Module, 
         device: torch.device, 
-        bounds: Tuple[float, float], 
-        preprocessing: Optional[Dict]
+        bounds: Tuple[float, float] = BOUNDS, 
+        preprocessing: Optional[Dict] = PREPROCESSING
     ) -> None:
         self.rmodel = fb.PyTorchModel(
             model,
@@ -190,11 +188,11 @@ class Adversary:
             other critera could be given to carry target attack or black attack.
     """
     def __init__(
-        self, model: AdversarialDefensiveModel, 
+        self, model: AdversarialDefensiveModule, 
         attacker: Callable, device: torch.device,
-        bounds: Tuple[float, float], 
-        preprocessing: Optional[Dict], 
-        epsilon: Union[None, float, List[float]]
+        epsilon: Union[None, float, List[float]],
+        bounds: Tuple[float, float] = BOUNDS, 
+        preprocessing: Optional[Dict] = PREPROCESSING
     ) -> None:
 
         model.eval()

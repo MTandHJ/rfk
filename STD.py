@@ -56,6 +56,7 @@ def load_cfg() -> Tuple[Config, str]:
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
+    model.set_normalizer(opts.dataset)
     device = gpu(model)
 
 
@@ -82,7 +83,6 @@ def load_cfg() -> Tuple[Config, str]:
         train=False,
         show_progress=opts.progress
     )
-    normalizer = load_normalizer(dataset_type=opts.dataset)
 
     # load the optimizer and learning_policy
     optimizer = load_optimizer(
@@ -112,7 +112,7 @@ def load_cfg() -> Tuple[Config, str]:
     cfg['coach'] = Coach(
         model=model, device=device, 
         loss_func=load_loss_func(opts.loss), 
-        normalizer=normalizer, optimizer=optimizer,
+        optimizer=optimizer,
         learning_policy=learning_policy
     )
 

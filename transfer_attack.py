@@ -50,6 +50,7 @@ def load_cfg() -> 'Config':
 
     # load the source_model
     source_model = load_model(opts.source_model)(num_classes=get_num_classes(opts.dataset))
+    source_model.set_normalizer(opts.dataset)
     device = gpu(source_model)
     load(
         model=source_model, 
@@ -59,6 +60,7 @@ def load_cfg() -> 'Config':
 
     # load the target_model
     target_model = load_model(opts.target_model)(num_classes=get_num_classes(opts.dataset))
+    target_model.set_normalizer(opts.dataset)
     device = gpu(target_model)
     load(
         model=target_model, 
@@ -87,20 +89,20 @@ def load_cfg() -> 'Config':
     )
 
     # set the attacker
-    attack, bounds, preprocessing = load_attacks(
-        attack_type=opts.attack, dataset_type=opts.dataset, 
-        stepsize=opts.stepsize, steps=opts.steps
+    attack = load_attack(
+        attack_type=opts.attack,
+        stepsize=opts.stepsize, 
+        steps=opts.steps
     )
 
     cfg['attacker'] = AdversaryForValid(
-        model=source_model, attacker=attack, device=device,
-        bounds=bounds, preprocessing=preprocessing, epsilon=opts.epsilon
+        model=source_model, attacker=attack, 
+        device=device, epsilon=opts.epsilon
     )
 
     # set the defender ...
     cfg['defender'] = FBDefense(
-        model=target_model, device=device,
-        bounds=bounds, preprocessing=preprocessing
+        model=target_model, device=device
     )
 
     return cfg

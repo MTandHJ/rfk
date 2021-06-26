@@ -10,13 +10,13 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .base import AdversarialDefensiveModel
+from .base import ADArch, AdversarialDefensiveModule
 from .layerops import Sequential
 
 
 __all__ = ["WideResNet", "wrn_28_10", "wrn_34_10", "wrn_34_20"]
 
-class BasicBlock(AdversarialDefensiveModel):
+class BasicBlock(AdversarialDefensiveModule):
     def __init__(self, in_planes, out_planes, stride, dropRate=0.0):
         super(BasicBlock, self).__init__()
         self.bn1 = nn.BatchNorm2d(in_planes)
@@ -44,7 +44,7 @@ class BasicBlock(AdversarialDefensiveModel):
         return torch.add(x if self.equalInOut else self.convShortcut(x), out)
 
 
-class NetworkBlock(AdversarialDefensiveModel):
+class NetworkBlock(AdversarialDefensiveModule):
     def __init__(self, nb_layers, in_planes, out_planes, block, stride, dropRate=0.0):
         super(NetworkBlock, self).__init__()
         self.layer = self._make_layer(block, in_planes, out_planes, nb_layers, stride, dropRate)
@@ -59,7 +59,7 @@ class NetworkBlock(AdversarialDefensiveModel):
         return self.layer(x)
 
 
-class WideResNet(AdversarialDefensiveModel):
+class WideResNet(ADArch):
     def __init__(self, depth=34, num_classes=10, widen_factor=10, dropRate=0.0):
         super(WideResNet, self).__init__()
         nChannels = [16, 16 * widen_factor, 32 * widen_factor, 64 * widen_factor]
