@@ -1,11 +1,10 @@
 
 
-from typing import Any
+from typing import Any, Callable
 import torch
 import torch.nn as nn
 import abc
 
-from src.loadopts import load_normalizer
 
 class ADType(abc.ABC): ...
 
@@ -38,8 +37,8 @@ class AdversarialDefensiveModule(ADType, nn.Module):
 
 class ADArch(AdversarialDefensiveModule):
 
-    def set_normalizer(self, dataset: str) -> None:
-        self.normalizer = load_normalizer(dataset)
+    def set_normalizer(self, normalizer: Callable) -> None:
+        self.normalizer = normalizer
 
     def __call__(self, inputs: torch.Tensor, **kwargs: Any) -> Any:
         try:
