@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .base import AdversarialDefensiveModel
-from .layerops import Sequential, MarkLayer
+from .layerops import Sequential
 
 
 __all__ = ["WideResNet", "wrn_28_10", "wrn_34_10", "wrn_34_20"]
@@ -31,7 +31,6 @@ class BasicBlock(AdversarialDefensiveModel):
         self.equalInOut = (in_planes == out_planes)
         self.convShortcut = (not self.equalInOut) and nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
                                                                 padding=0, bias=False) or None
-        self.mark = MarkLayer()
 
     def forward(self, x):
         if not self.equalInOut:
@@ -42,7 +41,7 @@ class BasicBlock(AdversarialDefensiveModel):
         if self.droprate > 0:
             out = F.dropout(out, p=self.droprate, training=self.training)
         out = self.conv2(out)
-        return self.mark(torch.add(x if self.equalInOut else self.convShortcut(x), out))
+        return torch.add(x if self.equalInOut else self.convShortcut(x), out)
 
 
 class NetworkBlock(AdversarialDefensiveModel):
@@ -83,7 +82,6 @@ class WideResNet(AdversarialDefensiveModel):
         self.fc = nn.Linear(nChannels[3], num_classes)
         self.nChannels = nChannels[3]
 
-        self.mark = MarkLayer()
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -96,7 +94,6 @@ class WideResNet(AdversarialDefensiveModel):
                 m.bias.data.zero_()
 
     def forward(self, x):
-        x = self.mark(x)
         x = self.conv1(x)
         x = self.block1(x)
         x = self.block2(x)

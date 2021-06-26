@@ -38,7 +38,6 @@ parser.add_argument("--transform", type=str, default='default',
 parser.add_argument("--resume", action="store_true", default=False)
 parser.add_argument("--progress", action="store_true", default=False, 
                 help="show the progress if true")
-parser.add_argument("-slg", "--stats_log", action="store_true", default=False)
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="STD")
 opts = parser.parse_args()
@@ -51,7 +50,6 @@ def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach
     from src.utils import gpu, set_seed, load_checkpoint
-    from models.logger import Loggers, BlankLoggers
 
     cfg = Config()
     set_seed(opts.seed)
@@ -60,11 +58,6 @@ def load_cfg() -> Tuple[Config, str]:
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
     device = gpu(model)
 
-    if opts.stats_log:
-        print(">>> Applying Statstics Logging ...")
-        cfg['stats_logger'] = Loggers(model)
-    else:
-        cfg['stats_logger'] = BlankLoggers(None)
 
     # load the dataset
     trainset = load_dataset(
@@ -78,13 +71,13 @@ def load_cfg() -> Tuple[Config, str]:
         train=True,
         show_progress=opts.progress
     )
-    testset = load_dataset(
+    validset = load_dataset(
         dataset_type=opts.dataset,
         transform=opts.transform,
         train=False
     )
-    cfg['testloader'] = load_dataloader(
-        dataset=testset, 
+    cfg['validloader'] = load_dataloader(
+        dataset=validset, 
         batch_size=opts.batch_size, 
         train=False,
         show_progress=opts.progress
@@ -132,12 +125,12 @@ def load_cfg() -> Tuple[Config, str]:
 
 
 def evaluate(
-    valider, stats_logger, trainloader, testloader,
+    valider, trainloader, validloader,
     acc_logger, rob_logger, writter, log_path,
     epoch = 8888
 ):
-    train_acc_nat, train_acc_adv = valider.evaluate(trainloader, stats_logger, logging=False)
-    valid_acc_nat, valid_acc_adv = valider.evaluate(testloader, stats_logger, logging=True)
+    train_acc_nat, train_acc_adv = valider.evaluate(trainloader)
+    valid_acc_nat, valid_acc_adv = valider.evaluate(validloader)
     print(f"Train >>> [TA: {train_acc_nat:.5f}]    [RA: {train_acc_adv:.5f}]")
     print(f"Test. >>> [TA: {valid_acc_nat:.5f}]    [RA: {valid_acc_adv:.5f}]")
     writter.add_scalars("Accuracy", {"train":train_acc_nat, "valid":valid_acc_nat}, epoch)
@@ -148,12 +141,10 @@ def evaluate(
     rob_logger.train(data=train_acc_adv, T=epoch)
     rob_logger.valid(data=valid_acc_adv, T=epoch)
 
-    stats_logger.save(log_path=log_path, T=epoch)
-    stats_logger.reset()
 
 def main(
-    coach, valider, stats_logger,
-    trainloader, testloader, start_epoch, 
+    coach, valider,
+    trainloader, validloader, start_epoch, 
     info_path, log_path
 ):  
     from src.utils import save_checkpoint, TrackMeter, ImageMeter
@@ -178,8 +169,8 @@ def main(
 
         if epoch % PRINT_FREQ == 0:
             evaluate(
-                valider=valider, stats_logger=stats_logger, 
-                trainloader=trainloader, testloader=testloader,
+                valider=valider,
+                trainloader=trainloader, validloader=validloader,
                 acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
                 log_path=log_path, epoch=epoch
             )
@@ -190,8 +181,8 @@ def main(
 
 
     evaluate(
-        valider=valider, stats_logger=stats_logger,
-        trainloader=trainloader, testloader=testloader,
+        valider=valider,
+        trainloader=trainloader,validloader=validloader,
         acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
         log_path=log_path, epoch=opts.epochs
     )

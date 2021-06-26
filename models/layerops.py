@@ -7,10 +7,6 @@ from .base import AdversarialDefensiveModel
 class Sequential(nn.Sequential, AdversarialDefensiveModel): ...
 class ModuleList(nn.ModuleList, AdversarialDefensiveModel): ...
 
-class MarkLayer(AdversarialDefensiveModel):
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        return inputs
-
 class TriggerBN1d(AdversarialDefensiveModel):
 
     def __init__(self, num_features: int, **kwargs):

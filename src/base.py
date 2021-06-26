@@ -9,7 +9,6 @@ import eagerpy as ep
 import os
 
 from models.base import AdversarialDefensiveModel
-from models.logger import Loggers
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
 from .loss_zoo import cross_entropy, kl_divergence
@@ -258,9 +257,8 @@ class AdversaryForValid(Adversary):
     def evaluate(
         self, 
         dataloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
-        logger: Loggers,
         epsilon: Union[None, float, List[float]] = None,
-        *, defending: bool = True, logging: bool = False
+        *, defending: bool = True
     ) -> Tuple[float, float]:
 
         datasize = len(dataloader.dataset) # type: ignore
@@ -268,15 +266,11 @@ class AdversaryForValid(Adversary):
         acc_adv = 0
         self.model.defend(defending) # enter 'defending' mode
         for inputs, labels in dataloader:
-            logger.record(False)
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            _, clipped, _ = self.attack(inputs, labels, epsilon)
-            logger.record(logging) # wheather logging statstics ...
-            logger.nora(True) # taking natural samples as inputs
+            _, _, is_adv = self.attack(inputs, labels, epsilon)
             acc_nat += self.accuracy(inputs, labels)
-            logger.nora(False) # taking adversarial samples as inputs
-            acc_adv += self.accuracy(clipped, labels)
+            acc_adv += (~is_adv).sum().item()
         return acc_nat / datasize, acc_adv / datasize
 
 
