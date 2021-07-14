@@ -9,7 +9,7 @@ import time
 from tqdm import tqdm
 
 
-from models.base import AdversarialDefensiveModel
+from models.base import AdversarialDefensiveModule
 from .base import AdversaryForValid
 from .dict2obj import Config
 from .config import *
@@ -49,7 +49,7 @@ def load_model(model_type: str) -> Callable[..., torch.nn.Module]:
     srns = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnext50_32x4d']
     wrns = ['wrn_28_10', 'wrn_34_10', 'wrn_34_20']
 
-    model: Callable[..., AdversarialDefensiveModel]
+    model: Callable[..., AdversarialDefensiveModule]
     if model_type == "mnist":
         from models.mnist import MNIST
         model = MNIST
@@ -304,6 +304,7 @@ def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     pgd-l1: \ell_1 version;
     pgd-l2: \ell_2 version;
     pgd-kl: pgd-linf with KL divergence loss;
+    pgd-softmax: pgd-linf with cross-entropy loss which takes probs as inputs
     fgsm: no hyper-parameters;
     cw-l2: stepsize=stepsize, steps=steps;
     ead: initial_stepsize=stepsize, steps=steps;
@@ -333,6 +334,12 @@ def _attack(attack_type: str, stepsize: float, steps: int) -> fb.attacks.Attack:
     elif attack_type == "pgd-kl":
         from .attacks import LinfPGDKLDiv
         attack = LinfPGDKLDiv(
+            rel_stepsize=stepsize,
+            steps=steps
+        )
+    elif attack_type == "pgd-softmax":
+        from .attacks import LinfPGDSoftmax
+        attack = LinfPGDSoftmax(
             rel_stepsize=stepsize,
             steps=steps
         )

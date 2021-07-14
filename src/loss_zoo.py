@@ -14,6 +14,16 @@ def cross_entropy(
 ) -> torch.Tensor:
     return F.cross_entropy(outs, labels, reduction=reduction)
 
+def cross_entropy_softmax(
+    probs: torch.Tensor,
+    labels: torch.Tensor,
+    reduction: str = "mean"
+) -> torch.Tensor:
+    """
+    probs: the softmax of logits
+    """
+    return F.nll_loss(probs.log(), labels, reduction=reduction)
+
 def kl_divergence(
     logits: torch.Tensor, 
     targets: torch.Tensor, 
