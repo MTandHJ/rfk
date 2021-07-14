@@ -12,6 +12,9 @@ def cross_entropy(
     labels: torch.Tensor, 
     reduction: str = "mean"
 ) -> torch.Tensor:
+    """
+    cross entropy with logits
+    """
     return F.cross_entropy(outs, labels, reduction=reduction)
 
 def cross_entropy_softmax(
@@ -20,7 +23,8 @@ def cross_entropy_softmax(
     reduction: str = "mean"
 ) -> torch.Tensor:
     """
-    probs: the softmax of logits
+    cross entropy with probs
+        probs: the softmax of logits
     """
     return F.nll_loss(probs.log(), labels, reduction=reduction)
 
