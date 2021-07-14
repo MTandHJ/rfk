@@ -9,8 +9,8 @@ Yerlan Idelbayev: https://github.com/akamaster/pytorch_resnet_cifar10/blob/maste
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .base import AdversarialDefensiveModel
-from .layerops import MarkLayer, Sequential
+from .base import ADArch, AdversarialDefensiveModule
+from .layerops import Sequential
 
 
 
@@ -26,7 +26,7 @@ def conv1x1(in_channels, out_channels, stride=1):
 
 
 
-class BasicBlock(AdversarialDefensiveModel):
+class BasicBlock(AdversarialDefensiveModule):
 
     def __init__(
         self, in_channels, out_channels,
@@ -39,16 +39,15 @@ class BasicBlock(AdversarialDefensiveModel):
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.activation = nn.ReLU()
         self.shortway = shortcut
-        self.mark = MarkLayer()
 
     def forward(self, x):
         temp = self.activation(self.bn1(self.conv1(x)))
         outs = self.bn2(self.conv2(temp))
         outs2 = x if self.shortway is None else self.shortway(x)
-        return self.mark(self.activation(outs + outs2))
+        return self.activation(outs + outs2)
 
 
-class ResNet(AdversarialDefensiveModel):
+class ResNet(ADArch):
 
     def __init__(
         self, layers, num_classes=10,
@@ -68,7 +67,6 @@ class ResNet(AdversarialDefensiveModel):
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(64, num_classes)
         
-        self.mark = MarkLayer()
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -92,7 +90,6 @@ class ResNet(AdversarialDefensiveModel):
         return Sequential(*layers)
 
     def forward(self, inputs):
-        inputs = self.mark(inputs)
         x = F.relu(self.bn0(self.conv0(inputs)))
         l1 = self.layer1(x)
         l2 = self.layer2(l1)

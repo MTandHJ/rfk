@@ -3,13 +3,13 @@
 
 import torch
 import torch.nn as nn
-from .base import AdversarialDefensiveModel
-from .layerops import Sequential, MarkLayer
+from .base import ADArch
+from .layerops import Sequential
 
 
 
 
-class CIFAR(AdversarialDefensiveModel):
+class CIFAR(ADArch):
 
     def __init__(self, dim_feature=256, num_classes=10):
         super(CIFAR, self).__init__()
@@ -20,7 +20,6 @@ class CIFAR(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 3),  # 64 x 28 x 28
             nn.BatchNorm2d(64),
-            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2),  # 64 x 14 x 14
             nn.Conv2d(64, 128, 3),  # 128 x 12 x 12
@@ -28,7 +27,6 @@ class CIFAR(AdversarialDefensiveModel):
             nn.ReLU(inplace=True),
             nn.Conv2d(128, 128, 3),  # 128 x 10 x 10
             nn.BatchNorm2d(128),
-            MarkLayer(),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2)  # 128 x 5 x 5
         )
@@ -43,10 +41,8 @@ class CIFAR(AdversarialDefensiveModel):
         self.activation = nn.ReLU(inplace=True)
         self.fc = nn.Linear(dim_feature, num_classes)
 
-        self.mark = MarkLayer()
 
     def forward(self, x):
-        x = self.mark(x)
         x = self.conv(x).flatten(start_dim=1)
         features = self.activation(self.dense(x))
         outs = self.fc(features)
