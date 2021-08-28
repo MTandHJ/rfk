@@ -11,7 +11,7 @@ import os
 from models.base import AdversarialDefensiveModule
 from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter
-from .loss_zoo import cross_entropy, kl_divergence
+from .loss_zoo import cross_entropy, kl_divergence, lploss
 from .config import SAVED_FILENAME, BOUNDS, PREPROCESSING
 
 
@@ -106,6 +106,41 @@ class Coach:
         self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
+    def alp(
+        self,
+        trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],
+        attacker: "Adversary", 
+        *, leverage: float = .5, epoch: int = 8888
+    ) -> float:
+
+        self.progress.step()
+        for inputs, labels in trainloader:
+            inputs = inputs.to(self.device)
+            labels = labels.to(self.device)
+
+            _, clipped, _ = attacker(inputs, labels)
+
+            self.model.train()
+            logits_nat = self.model(inputs)
+            logits_adv = self.model(clipped)
+            loss_nat = self.loss_func(logits_nat, labels)
+            loss_adv = self.loss_func(logits_adv, labels)
+            loss_reg = lploss(logits_nat - logits_adv)
+            loss = loss_nat + loss_adv + leverage * loss_reg
+
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+
+            acc_count = (logits_adv.argmax(-1) == labels).sum().item()
+            self.loss.update(loss.item(), inputs.size(0), mode="mean")
+            self.acc.update(acc_count, inputs.size(0), mode="sum")
+
+        self.progress.display(epoch=epoch)
+        self.learning_policy.step()
+
+        return self.loss.avg
+
     def trades(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],
@@ -125,11 +160,11 @@ class Coach:
             _, inputs_adv, _ = attacker(inputs, criterion)
             
             self.model.train()
-            logits_clean = self.model(inputs)
+            logits_nat = self.model(inputs)
             logits_adv = self.model(inputs_adv)
-            loss_clean = cross_entropy(logits_clean, labels)
-            loss_adv = kl_divergence(logits_adv, logits_clean)
-            loss = loss_clean + leverage * loss_adv
+            loss_nat = cross_entropy(logits_nat, labels)
+            loss_adv = kl_divergence(logits_adv, logits_nat)
+            loss = loss_nat + leverage * loss_adv
 
             self.optimizer.zero_grad()
             loss.backward()
@@ -143,7 +178,6 @@ class Coach:
         self.learning_policy.step()
 
         return self.loss.avg
-
 
 
 class FBDefense:

@@ -1,8 +1,10 @@
 
 
+from typing import Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision.transforms.transforms import Iterable
 
 
 
@@ -39,3 +41,10 @@ def kl_divergence(
     inputs = F.log_softmax(logits, dim=-1)
     targets = F.softmax(targets, dim=-1)
     return F.kl_div(inputs, targets, reduction=reduction)
+
+def lploss(
+    x: torch.Tensor,
+    p: Union[int, float, 'fro', 'nuc'] = 'fro',
+    dim: Union[int, Iterable] = -1
+):
+    return torch.norm(x, p=p, dim=dim).mean()
