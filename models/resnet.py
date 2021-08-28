@@ -100,28 +100,28 @@ class ResNet(ADArch):
         return outs
 
 
-def resnet20(num_classes=10):
-    return ResNet([3, 3, 3], num_classes=num_classes)
+def resnet20(num_classes=10, **kwargs):
+    return ResNet([3, 3, 3], num_classes=num_classes, **kwargs)
 
 
-def resnet32(num_classes=10):
-    return ResNet([5, 5, 5], num_classes=num_classes)
+def resnet32(num_classes=10, **kwargs):
+    return ResNet([5, 5, 5], num_classes=num_classes, **kwargs)
 
 
-def resnet44(num_classes=10):
-    return ResNet([7, 7, 7], num_classes=num_classes)
+def resnet44(num_classes=10, **kwargs):
+    return ResNet([7, 7, 7], num_classes=num_classes, **kwargs)
 
 
-def resnet56(num_classes=10):
-    return ResNet([9, 9, 9], num_classes=num_classes)
+def resnet56(num_classes=10, **kwargs):
+    return ResNet([9, 9, 9], num_classes=num_classes, **kwargs)
 
 
-def resnet110(num_classes=10):
-    return ResNet([18, 18, 18], num_classes=num_classes)
+def resnet110(num_classes=10, **kwargs):
+    return ResNet([18, 18, 18], num_classes=num_classes, **kwargs)
 
 
-def resnet1202(num_classes=10):
-    return ResNet([200, 200, 200], num_classes=num_classes)
+def resnet1202(num_classes=10, **kwargs):
+    return ResNet([200, 200, 200], num_classes=num_classes, **kwargs)
 
 
         

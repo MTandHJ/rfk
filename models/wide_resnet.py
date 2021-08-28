@@ -106,14 +106,14 @@ class WideResNet(ADArch):
 
 
 
-def wrn_28_10(num_classes=10):
-    return WideResNet(depth=28, widen_factor=10, num_classes=num_classes)
+def wrn_28_10(num_classes=10, **kwargs):
+    return WideResNet(depth=28, widen_factor=10, num_classes=num_classes, **kwargs)
 
-def wrn_34_10(num_classes=10):
-    return WideResNet(depth=34, widen_factor=10, num_classes=num_classes)
+def wrn_34_10(num_classes=10, **kwargs):
+    return WideResNet(depth=34, widen_factor=10, num_classes=num_classes, **kwargs)
 
-def wrn_34_20(num_classes=10):
-    return WideResNet(depth=34, widen_factor=20, num_classes=num_classes)
+def wrn_34_20(num_classes=10, **kwargs):
+    return WideResNet(depth=34, widen_factor=20, num_classes=num_classes, **kwargs)
 
 
 
