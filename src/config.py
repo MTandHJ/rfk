@@ -47,6 +47,9 @@ TRANSFORMS = {
     "mnist": {
         'default': T.ToTensor()
     },
+    "fashionmnist": {
+        'default': T.ToTensor()
+    },
     "cifar10": {
         'default': T.Compose((
             T.Pad(4, padding_mode='reflect'),
@@ -96,12 +99,14 @@ BOUNDS = (0, 1) # for fb.attacks.Attack
 PREPROCESSING = None # for fb.attacks.Attack
 MEANS = {
     "mnist": None,
+    "fashionmnist": None,
     "cifar10": [0.4914, 0.4824, 0.4467],
     "cifar100": [0.5071, 0.4867, 0.4408]
 }
 
 STDS = {
     "mnist": None,
+    "fashionmnist": None,
     "cifar10": [0.2471, 0.2435, 0.2617],
     "cifar100": [0.2675, 0.2565, 0.2761]
 }
