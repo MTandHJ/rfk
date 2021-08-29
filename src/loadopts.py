@@ -13,6 +13,7 @@ from models.base import AdversarialDefensiveModule
 from .base import AdversaryForValid
 from .dict2obj import Config
 from .config import *
+from .utils import getLogger
 
 
 
@@ -262,7 +263,8 @@ def load_optimizer(
                 weight_decay=weight_decay, nesterov=nesterov)
     
     cfg.update(**kwargs) # update the kwargs needed automatically
-    print(cfg)
+    logger = getLogger()
+    logger.info(cfg)
     if optim_type == "sgd":
         optim = torch.optim.SGD(model.parameters(), **cfg)
     elif optim_type == "adam":
@@ -295,7 +297,8 @@ def load_learning_policy(
     lp_type = learning_policy_[0]
     lp_cfg = learning_policy_[1]
     lp_cfg.update(**kwargs) # update the kwargs needed automatically
-    print(lp_type, lp_cfg)
+    logger = getLogger()
+    logger.info(f"{lp_type}    {lp_cfg}")
     learning_policy = getattr(
         torch.optim.lr_scheduler, 
         lp_type

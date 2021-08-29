@@ -9,14 +9,35 @@ import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
 
+import logging
 import random
 import os
 import sys
 import copy
 import pickle
 
-from .config import SAVED_FILENAME
+from .config import SAVED_FILENAME, LOGGER
 
+
+
+def set_logger(
+    path: str, 
+    log2file: bool = True, log2console: bool = True
+) -> None:
+    logger = logging.getLogger(LOGGER.name)
+    logger.setLevel(LOGGER.level)
+
+    if log2file:
+        handler = logging.FileHandler(os.path.join(path, LOGGER.filename))
+        handler.setLevel(LOGGER.level)
+        logger.addHandler(handler)
+    if log2console:
+        handler = logging.StreamHandler()
+        handler.setlevel(LOGGER.level)
+        logger.addHandler(handler)
+
+def getLogger():
+    return logging.getLogger(LOGGER.name)
 
 
 class AverageMeter:
@@ -78,7 +99,8 @@ class ProgressMeter:
     def display(self, *, epoch: int = 8888) -> None:
         entries = [self.prefix + f"[Epoch: {epoch:<4d}]"]
         entries += [str(meter) for meter in self.meters]
-        print('\t'.join(entries))
+        logger = getLogger()
+        logger.info('\t'.join(entries))
 
     def add(self, *meters: AverageMeter) -> None:
         self.meters += list(meters)
@@ -118,6 +140,7 @@ class ImageMeter:
     def save(self, writter: 'SummaryWriter', postfix: str = '') -> None:
         filename = f"{self.title}{postfix}"
         writter.add_figure(filename, self.fp.fig)
+
 
 
 def gpu(*models: nn.Module) -> torch.device:
@@ -211,7 +234,8 @@ def load_checkpoint(
     return epoch
 
 def export_pickle(data: Dict, file_: str) -> NoReturn:
-    print(">>> Export File ...")
+    logger = getLogger()
+    logger.info(">>> Export File ...")
     fh = None
     try:
         fh = open(file_, "wb")
@@ -224,7 +248,8 @@ def export_pickle(data: Dict, file_: str) -> NoReturn:
             fh.close()
 
 def import_pickle(file_: str) -> Dict:
-    print(">>> Import File ...")
+    logger = getLogger()
+    logger.info(">>> Import File ...")
     fh = None
     try:
         fh = open(file_, "rb")
@@ -239,7 +264,8 @@ def set_seed(seed: int) -> None:
     from torch.backends import cudnn
     if seed == -1:
         seed = random.randint(0, 1024)
-        print(f">>> Set seed randomly: {seed}")
+        logger = getLogger()
+        logger.info(f">>> Set seed randomly: {seed}")
         cudnn.benchmark, cudnn.deterministic = True, False
     else:
         cudnn.benchmark, cudnn.deterministic = False, True

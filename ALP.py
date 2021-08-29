@@ -50,6 +50,10 @@ parser.add_argument("--transform", type=str, default='default',
 parser.add_argument("--resume", action="store_true", default=False)
 parser.add_argument("--progress", action="store_true", default=False, 
                 help="show the progress if true")
+parser.add_argument("--log2file", action="store_false", default=True,
+                help="False: remove file handler")
+parser.add_argument("--log2console", action="store_false", default=True,
+                help="False: remove console handler if log2file is True ...")
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="ALP")
 opts = parser.parse_args()
@@ -60,10 +64,22 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach, AdversaryForTrain
-    from src.utils import gpu, set_seed, load_checkpoint
+    from src.utils import gpu, set_seed, load_checkpoint, set_logger
 
     cfg = Config()
     set_seed(opts.seed)
+
+    # generate the path for logging information and saving parameters
+    cfg['info_path'], cfg['log_path'] = generate_path(
+        method=METHOD, dataset_type=opts.dataset, 
+        model=opts.model, description=opts.description
+    )
+    # set logger
+    set_logger(
+        path=cfg.log_path, 
+        log2file=opts.log2file, 
+        log2console=opts.log2console
+    )
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
@@ -106,11 +122,6 @@ def load_cfg() -> Tuple[Config, str]:
         T_max=opts.epochs
     )
 
-    # generate the path for logging information and saving parameters
-    cfg['info_path'], cfg['log_path'] = generate_path(
-        method=METHOD, dataset_type=opts.dataset, 
-        model=opts.model, description=opts.description
-    )
     if opts.resume:
         cfg['start_epoch'] = load_checkpoint(
             path=cfg.info_path, model=model, 
@@ -147,13 +158,15 @@ def load_cfg() -> Tuple[Config, str]:
 
 def evaluate(
     valider, trainloader, validloader,
-    acc_logger, rob_logger, writter, log_path,
+    acc_logger, rob_logger, 
+    logger, writter, log_path,
     epoch = 8888
 ):
     train_acc_nat, train_acc_adv = valider.evaluate(trainloader)
     valid_acc_nat, valid_acc_adv = valider.evaluate(validloader)
-    print(f"Train >>> [TA: {train_acc_nat:.5f}]    [RA: {train_acc_adv:.5f}]")
-    print(f"Test. >>> [TA: {valid_acc_nat:.5f}]    [RA: {valid_acc_adv:.5f}]")
+
+    logger.info(f"Train >>> [TA: {train_acc_nat:.5f}]    [RA: {train_acc_adv:.5f}]")
+    logger.info(f"Test. >>> [TA: {valid_acc_nat:.5f}]    [RA: {valid_acc_adv:.5f}]")
     writter.add_scalars("Accuracy", {"train":train_acc_nat, "valid":valid_acc_nat}, epoch)
     writter.add_scalars("Robustness", {"train":train_acc_adv, "valid":valid_acc_adv}, epoch)
 
@@ -169,8 +182,9 @@ def main(
     trainloader, validloader, start_epoch, 
     info_path, log_path
 ):  
-    from src.utils import save_checkpoint, TrackMeter, ImageMeter
+    from src.utils import save_checkpoint, TrackMeter, ImageMeter, getLogger
     from src.dict2obj import Config
+    logger = getLogger()
     acc_logger = Config(
         train=TrackMeter("Train"),
         valid=TrackMeter("Valid")
@@ -193,7 +207,8 @@ def main(
             evaluate(
                 valider=valider,
                 trainloader=trainloader, validloader=validloader,
-                acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
+                acc_logger=acc_logger, rob_logger=rob_logger, 
+                logger=logger, writter=writter,
                 log_path=log_path, epoch=epoch
             )
             
@@ -205,7 +220,8 @@ def main(
     evaluate(
         valider=valider,
         trainloader=trainloader, validloader=validloader,
-        acc_logger=acc_logger, rob_logger=rob_logger, writter=writter,
+        acc_logger=acc_logger, rob_logger=rob_logger, 
+        logger=logger, writter=writter,
         log_path=log_path, epoch=opts.epochs
     )
 

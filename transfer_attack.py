@@ -34,6 +34,10 @@ parser.add_argument("--transform", type=str, default='default',
                 help="the data augmentation which will be applied in training mode.")
 parser.add_argument("--progress", action="store_false", default=True, 
                 help="show the progress if true")
+parser.add_argument("--log2file", action="store_false", default=True,
+                help="False: remove file handler")
+parser.add_argument("--log2console", action="store_false", default=True,
+                help="False: remove console handler if log2file is True ...")
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="attack")
 opts = parser.parse_args()
@@ -43,10 +47,23 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import FBDefense, AdversaryForValid
-    from src.utils import gpu, load, set_seed
+    from src.utils import gpu, load, set_seed, set_logger
 
     cfg = Config()
     set_seed(opts.seed)
+    
+    # generate the log path
+    mix_model = opts.source_model + "---" + opts.target_model
+    _, cfg['log_path'] = generate_path(
+        method=METHOD, dataset_type=opts.dataset,
+        model=mix_model, description=opts.description
+    )
+    # set logger
+    set_logger(
+        path=cfg.log_path, 
+        log2file=opts.log2file, 
+        log2console=opts.log2console
+    )
 
     # load the source_model
     source_model = load_model(opts.source_model)(num_classes=get_num_classes(opts.dataset))
@@ -81,13 +98,6 @@ def load_cfg() -> 'Config':
         show_progress=opts.progress
     )
 
-    # generate the log path
-    mix_model = opts.source_model + "---" + opts.target_model
-    _, cfg['log_path'] = generate_path(
-        method=METHOD, dataset_type=opts.dataset,
-        model=mix_model, description=opts.description
-    )
-
     # set the attacker
     attack = load_attack(
         attack_type=opts.attack,
@@ -109,7 +119,8 @@ def load_cfg() -> 'Config':
 
 def main(defender, attacker, testloader, log_path):
     from src.criteria import TransferClassification
-    from src.utils import distance_lp
+    from src.utils import distance_lp, getLogger
+    logger = getLogger()
     running_success = 0.
     running_distance_linf = 0.
     running_distance_l2 = 0.
@@ -136,7 +147,7 @@ def main(defender, attacker, testloader, log_path):
     )
     head = "-".join(map(str, (opts.attack, opts.epsilon, opts.stepsize, opts.steps)))
     writter.add_text(head, results)
-    print(results)
+    logger.info(results)
 
 
 

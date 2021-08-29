@@ -15,6 +15,7 @@
 
 import torchvision.transforms as T
 import random
+import logging
 from PIL import ImageFilter
 from .dict2obj import Config
 
@@ -37,6 +38,15 @@ SAVED_FILENAME = "paras.pt" # the filename of saved model paramters
 INFO_PATH = "./infos/{method}/{dataset}-{model}/{description}"
 LOG_PATH = "./logs/{method}/{dataset}-{model}/{description}-{time}"
 TIMEFMT = "%m%d%H"
+
+# logger
+LOGGER = Config(
+    name='RFK', filename='log.txt', level=logging.INFO,
+    formatter=Config(
+        filehandler=logging.Formatter('%(asctime)s | %(levelname)s | %(message)s'),
+        consolehandler=logging.logging.Formatter('%(message)s')
+    )
+)
 
 # for visualization
 BASE_FTYPES = ('max', 'min', 'mean', 'norm1', 'norm2', 'norminf')
