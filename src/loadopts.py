@@ -1,5 +1,6 @@
 
 from typing import TypeVar, Callable, Optional, Tuple, Dict
+import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as T
@@ -219,6 +220,21 @@ class _TQDMDataLoader(torch.utils.data.DataLoader):
             )
         )
 
+def _get_sampler(
+    dataset: torch.utils.data.Dataset,
+    rate: float = .1,
+    shuffle: bool = True, seed: int = 1
+) -> torch.utils.data.SubsetRandomSampler:
+    datasize = len(dataset)
+    indices = list(range(datasize))
+    if shuffle:
+        np.random.seed(seed)
+        np.random.shuffle(indices)
+    validsize = int(rate * datasize)
+    train_indices, valid_indices = indices[validsize:], indices[:validsize]
+    trainsampler = torch.utils.data.SubsetRandomSampler(train_indices)
+    validsampler = torch.utils.data.SubsetRandomSampler(valid_indices)
+    return trainsampler, validsampler
 
 def load_dataloader(
     dataset: torch.utils.data.Dataset, 
