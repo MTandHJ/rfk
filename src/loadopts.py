@@ -13,7 +13,7 @@ from models.base import AdversarialDefensiveModule
 from .base import AdversaryForValid
 from .dict2obj import Config
 from .config import *
-from .utils import getLogger
+from .utils import getLogger, mkdirs
 
 
 
@@ -298,7 +298,7 @@ def load_learning_policy(
     lp_cfg = learning_policy_[1]
     lp_cfg.update(**kwargs) # update the kwargs needed automatically
     logger = getLogger()
-    logger.info(f"{lp_type}    {lp_cfg}")
+    logger.info(f"{lp_cfg}    {lp_type}")
     learning_policy = getattr(
         torch.optim.lr_scheduler, 
         lp_type
@@ -437,5 +437,6 @@ def generate_path(
         description=description,
         time=time.strftime(TIMEFMT)
     )
+    mkdirs(info_path, log_path)
     return info_path, log_path
 

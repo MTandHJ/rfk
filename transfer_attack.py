@@ -6,10 +6,9 @@ Transfer Attack: utilize the source_model to attack
 the target model...
 """
 
-from typing import Tuple
-import torch
 import argparse
 from src.loadopts import *
+from src.utils import timemeter
 
 METHOD = "Transfer"
 FMT = "{description}={attack}-{epsilon:.4f}-{stepsize}-{steps}"
@@ -44,6 +43,7 @@ opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
 
 
+@timemeter("Setup")
 def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import FBDefense, AdversaryForValid
@@ -117,6 +117,8 @@ def load_cfg() -> 'Config':
 
     return cfg
 
+
+@timemeter("Main")
 def main(defender, attacker, testloader, log_path):
     from src.criteria import TransferClassification
     from src.utils import distance_lp, getLogger
@@ -150,13 +152,10 @@ def main(defender, attacker, testloader, log_path):
     logger.info(results)
 
 
-
-
 if __name__ == "__main__":
     from torch.utils.tensorboard import SummaryWriter
-    from src.utils import mkdirs, readme
+    from src.utils import readme
     cfg = load_cfg()
-    mkdirs(cfg.log_path)
     readme(cfg.log_path, opts, mode="a")
     writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
 

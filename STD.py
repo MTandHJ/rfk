@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import Tuple
 import argparse
 from src.loadopts import *
+from src.utils import timemeter
 
 
 
@@ -50,7 +51,7 @@ opts.description = FMT.format(**opts.__dict__)
 
 
 
-
+@timemeter("Setup")
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach
@@ -135,7 +136,7 @@ def load_cfg() -> Tuple[Config, str]:
     )
     return cfg
 
-
+@timemeter("Evaluation")
 def evaluate(
     valider, trainloader, validloader,
     acc_logger, rob_logger, 
@@ -156,6 +157,7 @@ def evaluate(
     rob_logger.valid(data=valid_acc_adv, T=epoch)
 
 
+@timemeter("Main")
 def main(
     coach, valider,
     trainloader, validloader, start_epoch, 
@@ -212,9 +214,8 @@ def main(
 
 if __name__ ==  "__main__":
     from torch.utils.tensorboard import SummaryWriter
-    from src.utils import mkdirs, readme
+    from src.utils import readme
     cfg = load_cfg()
-    mkdirs(cfg.info_path, cfg.log_path)
     readme(cfg.info_path, opts)
     readme(cfg.log_path, opts, mode="a")
     writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
@@ -223,13 +224,3 @@ if __name__ ==  "__main__":
 
     cfg['coach'].save(cfg.info_path)
     writter.close()
-
-
-
-
-
-
-
-
-
-

@@ -43,8 +43,8 @@ TIMEFMT = "%m%d%H"
 LOGGER = Config(
     name='RFK', filename='log.txt', level=logging.INFO,
     formatter=Config(
-        filehandler=logging.Formatter('%(asctime)s | %(levelname)s | %(message)s'),
-        consolehandler=logging.logging.Formatter('%(message)s')
+        filehandler=logging.Formatter('%(asctime)s:\t%(message)s'),
+        consolehandler=logging.Formatter('%(message)s')
     )
 )
 
@@ -136,7 +136,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[50, 75],
             gamma=0.1,
-            prefix="Default leaning policy will be applied:\n"
+            prefix="Default leaning policy will be applied:"
         )
     ),
     "null": (
@@ -144,7 +144,7 @@ LEARNING_POLICY = {
         Config(
             step_size=9999999999999,
             gamma=1,
-            prefix="Null leaning policy will be applied:\n"
+            prefix="Null leaning policy will be applied:"
         )
     ),
     "STD": (
@@ -152,7 +152,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[82, 123],
             gamma=0.1,
-            prefix="STD leaning policy will be applied:\n"
+            prefix="STD leaning policy will be applied:"
         )
     ),
     "STD-wrn": (
@@ -160,7 +160,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[60, 120, 160],
             gamma=0.2,
-            prefix="STD-wrn leaning policy will be applied:\n"
+            prefix="STD-wrn leaning policy will be applied:"
         )
     ),
     "AT":(
@@ -168,7 +168,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[102, 154],
             gamma=0.1,
-            prefix="AT learning policy, an official config:\n"
+            prefix="AT learning policy, an official config:"
         )
     ),
     "TRADES":(
@@ -176,7 +176,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[75, 90, 100],
             gamma=0.1,
-            prefix="TRADES learning policy, an official config:\n"
+            prefix="TRADES learning policy, an official config:"
         )
     ),
     "TRADES-M":(
@@ -184,7 +184,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[55, 75, 90],
             gamma=0.1,
-            prefix="TRADES learning policy, an official config for MNIST:\n"
+            prefix="TRADES learning policy, an official config for MNIST:"
         )
     ),
     "cosine":(   
@@ -193,7 +193,7 @@ LEARNING_POLICY = {
             T_max=200,
             eta_min=0.,
             last_epoch=-1,
-            prefix="cosine learning policy: T_max == epochs - 1:\n"
+            prefix="cosine learning policy: T_max == epochs - 1:"
         )
     )
 }

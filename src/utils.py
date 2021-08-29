@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import logging
+import time
 import random
 import os
 import sys
@@ -28,17 +29,36 @@ def set_logger(
     logger.setLevel(LOGGER.level)
 
     if log2file:
-        handler = logging.FileHandler(os.path.join(path, LOGGER.filename))
+        handler = logging.FileHandler(
+            os.path.join(path, LOGGER.filename), 
+            encoding='utf-8'
+        )
         handler.setLevel(LOGGER.level)
+        handler.setFormatter(LOGGER.formatter.filehandler)
         logger.addHandler(handler)
     if log2console:
         handler = logging.StreamHandler()
-        handler.setlevel(LOGGER.level)
+        handler.setLevel(LOGGER.level)
+        handler.setFormatter(LOGGER.formatter.consolehandler)
         logger.addHandler(handler)
 
 def getLogger():
     return logging.getLogger(LOGGER.name)
 
+def timemeter(prefix=""):
+    def decorator(func):
+        logger = getLogger()
+        def wrapper(*args, **kwargs):
+            start = time.process_time()
+            results = func(*args, **kwargs)
+            end = time.process_time()
+            logger.info(f"[CPU TIME]- {prefix} takes {end-start:.6f} ...")
+            return  results
+        wrapper.__doc__ = func.__doc__
+        wrapper.__name__ = func.__name__
+        return wrapper
+    return decorator
+        
 
 class AverageMeter:
 
@@ -97,7 +117,7 @@ class ProgressMeter:
         self.prefix = prefix
 
     def display(self, *, epoch: int = 8888) -> None:
-        entries = [self.prefix + f"[Epoch: {epoch:<4d}]"]
+        entries = [f"[Epoch: {epoch:<4d}]" + self.prefix]
         entries += [str(meter) for meter in self.meters]
         logger = getLogger()
         logger.info('\t'.join(entries))

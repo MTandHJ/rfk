@@ -63,7 +63,7 @@ class Config(dict):
 
     def __str__(self) -> str:
         item = " [{name}: {val}] "
-        infos = "վ'ᴗ' ի-" + self.prefix + "   "
+        infos = "[CONFIG]- " + self.prefix + "    "
         for name, val in self.items():
             infos += item.format(name=name, val=val)
         return infos

@@ -4,6 +4,7 @@
 import torch
 import argparse
 from src.loadopts import *
+from src.utils import timemeter
 
 
 METHOD = "WhiteBox"
@@ -41,7 +42,7 @@ opts.description = FMT.format(**opts.__dict__)
 
 
 
-
+@timemeter("Setup")
 def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import  AdversaryForValid
@@ -100,6 +101,8 @@ def load_cfg() -> 'Config':
 
     return cfg
 
+
+@timemeter("Main")
 def main(attacker, testloader, log_path):
     from src.utils import distance_lp, getLogger
     logger = getLogger()
@@ -146,9 +149,8 @@ def main(attacker, testloader, log_path):
 
 if __name__ == "__main__":
     from torch.utils.tensorboard import SummaryWriter
-    from src.utils import mkdirs, readme
+    from src.utils import readme
     cfg = load_cfg()
-    mkdirs(cfg.log_path)
     readme(cfg.log_path, opts, mode="a")
     writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
 
