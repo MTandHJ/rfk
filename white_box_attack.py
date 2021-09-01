@@ -142,9 +142,9 @@ def main(attacker, testloader, log_path):
         # )
     running_accuracy = list(map(lambda x: 1. - x, running_success))
    
-    logger.info("Accuracy: \n", running_accuracy)
-    logger.info("Distance-Linf: \n", running_distance_linf)
-    logger.info("Distance-L2: \n", running_distance_l2)
+    logger.info(f"Accuracy: {running_accuracy}")
+    logger.info(f"Distance-Linf: {running_distance_linf}")
+    logger.info(f"Distance-L2: {running_distance_l2}")
    
 
 if __name__ == "__main__":
