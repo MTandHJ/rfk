@@ -52,7 +52,7 @@ def timemeter(prefix=""):
             start = time.process_time()
             results = func(*args, **kwargs)
             end = time.process_time()
-            logger.info(f"[CPU TIME]- {prefix} takes {end-start:.6f} ...")
+            logger.info(f"[CPU TIME]- {prefix} takes {end-start:.6f} seconds ...")
             return  results
         wrapper.__doc__ = func.__doc__
         wrapper.__name__ = func.__name__

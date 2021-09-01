@@ -47,7 +47,7 @@ class Coach:
     def save(self, path: str, filename: str = SAVED_FILENAME) -> None:
         torch.save(self.model.state_dict(), os.path.join(path, filename))
 
-    @timemeter("Train[Epoch]")
+    @timemeter("Train/Epoch")
     def train(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
@@ -76,7 +76,7 @@ class Coach:
         self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
-    @timemeter("AdvTraining[Epoch]")
+    @timemeter("AdvTraining/Epoch")
     def adv_train(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]], 
@@ -108,7 +108,7 @@ class Coach:
         self.learning_policy.step() # update the learning rate
         return self.loss.avg
 
-    @timemeter("ALP[Epoch]")
+    @timemeter("ALP/Epoch")
     def alp(
         self,
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],
@@ -144,7 +144,7 @@ class Coach:
 
         return self.loss.avg
 
-    @timemeter("TRADES[Epoch]")
+    @timemeter("TRADES/Epoch")
     def trades(
         self, 
         trainloader: Iterable[Tuple[torch.Tensor, torch.Tensor]],

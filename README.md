@@ -280,15 +280,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|        $\epsilon$        |   -   |    -     |   0   |  0.3   |   0.3   | 0.3  |   0.3    | 0.3  | 0.3  |
-| :----------------------: | :---: | :------: | :---: | :----: | :-----: | :--: | :------: | :--: | :--: |
-|          Method          |  Net  |    LP    | TA(%) | PGD-50 | PGD-100 |  AA  | DeepFool | BBA  | FGSM |
-|           STD            | mnist |   null   |       |        |         |      |          |      |      |
-|            AT            | mnist |   null   |       |        |         |      |          |      |      |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |       |        |         |      |          |      |      |
-|    ALP $(\lambda=1)$     | mnist |   null   |       |        |         |      |          |      |      |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |       |        |         |      |          |      |      |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |       |        |         |      |          |      |      |
+|        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   | 0.3  |   0.3    | 0.3  |  0.3   |
+| :----------------------: | :---: | :------: | :----: | :----: | :-----: | :--: | :------: | :--: | :----: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |  AA  | DeepFool | BBA  |  FGSM  |
+|           STD            | mnist |   null   | 99.230 | 28.030 | 27.990  |      |  0.910   |  -   | 83.900 |
+|            AT            | mnist |   null   |        |        |         |      |          |  -   |        |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |         |      |          |  -   |        |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |      |          |  -   |        |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |         |      |          |  -   |        |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |         |      |          |  -   |        |
 
 
 
