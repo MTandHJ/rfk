@@ -26,7 +26,7 @@ parser.add_argument("--stepsize", type=float, default=0.1,
 parser.add_argument("--steps", type=int, default=20)
 
 # basic settings
-parser.add_argument("-b", "--batch_size", type=int, default=128)
+parser.add_argument("-b", "--batch_size", type=int, default=256)
 parser.add_argument("--transform", type=str, default='default', 
                 help="the data augmentation which will be applied in training mode.")
 parser.add_argument("--progress", action="store_false", default=True, 

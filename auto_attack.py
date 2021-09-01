@@ -22,7 +22,7 @@ parser.add_argument("info_path", type=str)
 parser.add_argument("--norm", choices=("Linf", "L2"), default="Linf")
 parser.add_argument("--epsilon", type=float, default=8/255)
 parser.add_argument("--version", choices=("standard", "plus"), default="standard")
-parser.add_argument("-b", "--batch_size", type=int, default=128)
+parser.add_argument("-b", "--batch_size", type=int, default=256)
 
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="attack")
