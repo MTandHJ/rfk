@@ -167,8 +167,8 @@ def evaluate(
     train_acc_nat, train_acc_adv = valider.evaluate(trainloader)
     valid_acc_nat, valid_acc_adv = valider.evaluate(validloader)
 
-    logger.info(f"Train >>> [TA: {train_acc_nat:.5f}]    [RA: {train_acc_adv:.5f}]")
-    logger.info(f"Test. >>> [TA: {valid_acc_nat:.5f}]    [RA: {valid_acc_adv:.5f}]")
+    logger.info(f"Train >>> [TA: {train_acc_nat:.3%}]    [RA: {train_acc_adv:.3%}]")
+    logger.info(f"Test. >>> [TA: {valid_acc_nat:.3%}]    [RA: {valid_acc_adv:.3%}]")
     writter.add_scalars("Accuracy", {"train":train_acc_nat, "valid":valid_acc_nat}, epoch)
     writter.add_scalars("Robustness", {"train":train_acc_adv, "valid":valid_acc_adv}, epoch)
 

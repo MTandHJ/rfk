@@ -141,6 +141,10 @@ def main(attacker, testloader, log_path):
         #     epsilon
         # )
     running_accuracy = list(map(lambda x: 1. - x, running_success))
+
+    running_accuracy = ' '.join([f" {acc:.3%} " for acc in running_accuracy])
+    running_distance_linf = ' '.join([f" {dis_linf:.5f} " for dis_linf in running_distance_linf])
+    running_distance_l2 = ' '.join([f" {dis_l2:.5f} " for dis_l2 in running_distance_l2])
    
     logger.info(f"Accuracy: {running_accuracy}")
     logger.info(f"Distance-Linf: {running_distance_linf}")

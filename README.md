@@ -280,15 +280,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   | 0.3  |   0.3    | 0.3  |  0.3   |
-| :----------------------: | :---: | :------: | :----: | :----: | :-----: | :--: | :------: | :--: | :----: |
-|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |  AA  | DeepFool | BBA  |  FGSM  |
-|           STD            | mnist |   null   | 99.230 | 28.030 | 27.990  |      |  0.910   |  -   | 83.900 |
-|            AT            | mnist |   null   |        |        |         |      |          |  -   |        |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |         |      |          |  -   |        |
-|    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |      |          |  -   |        |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |         |      |          |  -   |        |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |         |      |          |  -   |        |
+|        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   |  0.3   |   0.3    | 0.3  |  0.3   |
+| :----------------------: | :---: | :------: | :----: | :----: | :-----: | :----: | :------: | :--: | :----: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |   AA   | DeepFool | BBA  |  FGSM  |
+|           STD            | mnist |   null   | 99.230 | 28.030 | 27.990  |  0.0   |  0.910   |  -   | 83.900 |
+|            AT            | mnist |   null   | 99.460 | 96.270 | 95.480  | 92.780 |  96.890  |  -   | 97.500 |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |         |        |          |  -   |        |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |        |          |  -   |        |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 99.450 | 96.220 | 95.560  | 92.990 |  96.900  |  -   | 97.590 |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |         |        |          |  -   |        |
 
 
 
@@ -297,15 +297,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|        $\epsilon$        |   -   |    -     |   0   |    2    |  2   |    2     |  2   |  2   |
-| :----------------------: | :---: | :------: | :---: | :-----: | :--: | :------: | :--: | :--: |
-|          Method          |  Net  |    LP    | TA(%) | PGD-100 |  AA  | DeepFool | BBA  | C&W  |
-|           STD            | mnist |   null   |       |         |      |          |      |      |
-|            AT            | mnist |   null   |       |         |      |          |      |      |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |       |         |      |          |      |      |
-|    ALP $(\lambda=1)$     | mnist |   null   |       |         |      |          |      |      |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |       |         |      |          |      |      |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |       |         |      |          |      |      |
+|        $\epsilon$        |   -   |    -     |   0    |    2    |   2   |    2     |   2    |  2   |
+| :----------------------: | :---: | :------: | :----: | :-----: | :---: | :------: | :----: | :--: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-100 |  AA   | DeepFool |  C&W   | BBA  |
+|           STD            | mnist |   null   | 99.230 | 72.860  | 0.000 |  0.860   | 1.330  |  -   |
+|            AT            | mnist |   null   | 99.460 | 92.710  | 14.1  |  96.010  | 72.410 |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |         |       |          |        |  -   |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |         |       |          |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 99.450 | 93.500  |       |  96.160  | 80.390 |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |         |       |          |        |  -   |
 
 
 
@@ -313,13 +313,13 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|        $\epsilon$        |   -   |    -     |   0   |   10   |  10   |  10  |
-| :----------------------: | :---: | :------: | :---: | :----: | :---: | :--: |
-|          Method          |  Net  |    LP    | TA(%) | PGD-50 | SLIDE | BBA  |
-|           STD            | mnist |   null   |       |        |       |      |
-|            AT            | mnist |   null   |       |        |       |      |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |       |        |       |      |
-|    ALP $(\lambda=1)$     | mnist |   null   |       |        |       |      |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |       |        |       |      |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |       |        |       |      |
+|        $\epsilon$        |   -   |    -     |   0    |   10   |   10   |  10  |
+| :----------------------: | :---: | :------: | :----: | :----: | :----: | :--: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
+|           STD            | mnist |   null   | 99.230 | 81.930 | 74.700 |  -   |
+|            AT            | mnist |   null   | 99.460 | 95.890 | 86.420 |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |        |  -   |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 99.450 | 95.900 | 86.960 |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |        |  -   |
 

@@ -41,7 +41,7 @@ class Coach:
         self.optimizer = optimizer
         self.learning_policy = learning_policy
         self.loss = AverageMeter("Loss")
-        self.acc = AverageMeter("Acc")
+        self.acc = AverageMeter("Acc", fmt=".3%")
         self.progress = ProgressMeter(self.loss, self.acc)
         
     def save(self, path: str, filename: str = SAVED_FILENAME) -> None:
