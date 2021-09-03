@@ -68,7 +68,6 @@ def load_cfg() -> Tuple[Config, str]:
     from src.utils import gpu, set_seed, load_checkpoint, set_logger
 
     cfg = Config()
-    set_seed(opts.seed)
 
     # generate the path for logging information and saving parameters
     cfg['info_path'], cfg['log_path'] = generate_path(
@@ -81,6 +80,8 @@ def load_cfg() -> Tuple[Config, str]:
         log2file=opts.log2file, 
         log2console=opts.log2console
     )
+
+    set_seed(opts.seed)
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))

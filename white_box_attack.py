@@ -49,7 +49,6 @@ def load_cfg() -> 'Config':
     from src.utils import gpu, load, set_seed, set_logger
 
     cfg = Config()
-    set_seed(opts.seed)
    
     # generate the log path
     _, cfg['log_path'] = generate_path(
@@ -62,6 +61,8 @@ def load_cfg() -> 'Config':
         log2file=opts.log2file, 
         log2console=opts.log2console
     )
+
+    set_seed(opts.seed)
 
     # load the model
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
