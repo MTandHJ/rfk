@@ -48,10 +48,6 @@ LOGGER = Config(
     )
 )
 
-# for visualization
-BASE_FTYPES = ('max', 'min', 'mean', 'norm1', 'norm2', 'norminf')
-FTYPES = BASE_FTYPES
-STATS_FILENAME = "model.stats"
 
 TRANSFORMS = {
     "mnist": {
@@ -96,6 +92,7 @@ TRANSFORMS = {
 
 VALIDER = {
     "mnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
+    "fashionmnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
     "cifar10": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255),
     "cifar100": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255)
 }
