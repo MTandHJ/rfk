@@ -66,8 +66,24 @@ python TRADES.py resnet32 cifar10 -lp=default --epochs=110 -wd=0.0005
 ```
 python STD.py mnist mnist -lp=null --epochs=50 -lr=0.1 -wd=0 -mom=0.9 -b=128
 python AT.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
+python ALP.py mnist fashiomnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
 python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
 ```
+
+
+
+#### fashionmnist
+
+
+
+```
+python STD.py mnist fashionmnist -lp=null --epochs=50 -lr=0.1 -wd=0 -mom=0.9 -b=128
+python AT.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
+python ALP.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
+python TRADES.py mnist fashionmnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
+```
+
+
 
 
 
@@ -210,7 +226,7 @@ $\epsilon=16/255$ is also a usual choice.
 |           STD            | ResNet32  |   STD   | 93.270 | 0.000  | 0.000  | 0.000  | 0.000  | 0.000  | 0.000  | 0.000  | 0.000  |  0.019   |  0.000   |   -   |   -    | 21.800 | 14.150 |
 |            AT            | ResNet32  |   AT    | 79.420 | 48.300 | 18.410 | 48.440 | 19.280 | 47.460 | 15.500 | 42.990 | 10.920 |  48.700  |  25.500  |   -   |   -    | 53.390 | 35.140 |
 |   ALP  $(\lambda=0.5)$   | ResNet32  |   AT    | 80.700 | 47.760 | 18.830 | 48.270 | 19.770 | 46.950 | 16.550 | 43.230 | 12.270 |  49.540  |  27.220  |  --   |   -    | 53.180 | 33.850 |
-|    ALP $(\lambda=1)$     | ResNet32  |   AT    | 77.120 | 49.340 | 22.350 | 49.820 | 21.200 | 48.610 | 19.640 | 44.89  |        |  49.530  |  28.560  |       |        | 54.040 | 36.260 |
+|    ALP $(\lambda=1)$     | ResNet32  |   AT    | 77.120 | 49.340 | 22.350 | 49.820 | 21.200 | 48.610 | 19.640 | 44.890 | 14.340 |  49.530  |  28.560  |       |        | 54.040 | 36.260 |
 |          TRADES          | ResNet32  | TRADES  | 74.040 | 45.590 | 20.420 | 45.900 | 21.060 | 45.110 | 19.000 | 40.780 | 14.490 |  44.730  |  23.800  |   -   |   -    | 48.740 | 29.520 |
 | TRADES $(1 / \lambda=1)$ | ResNet32  | TRADES  | 82.220 | 39.370 | 10.090 | 39.930 | 10.700 | 38.300 | 8.470  | 34.620 | 6.150  |  41.830  |  17.290  |   -   |   -    | 45.840 | 23.610 |
 |           STD            | ResNet18  |   STD   | 95.280 | 0.030  | 0.000  | 0.010  | 0.000  | 0.000  | 0.000  | 0.000  | 0.000  |  2.030   |  0.030   |   -   |   -    | 37.960 | 24.560 |
@@ -235,7 +251,7 @@ $\epsilon=16/255$ is also a usual choice.
 |    STD     | ResNet32 | STD | 93.270 | 0.010 | 0.000 | 0.000 | 0.660 | - |
 |     AT     | ResNet32 | AT | 79.420 | 56.700 | 53.310 |   54.670    |  58.480  |  -  |
 | ALP $(\lambda=0.5)$ | ResNet32 | AT | 80.700 | 56.220 | 53.340 | 54.260 | 58.910 |  |
-| ALP $(\lambda=1)$ | ResNet32 | AT | 77.120 | 56.340 |  | 53.910 | 58.000 | |
+| ALP $(\lambda=1)$ | ResNet32 | AT | 77.120 | 56.340 | 53.250 | 53.910 | 58.000 | |
 |   TRADES   | ResNet32 | TRADES | 74.040 | 54.290 | 51.000 | 51.320 |  54.850  | - |
 | TRADES $(1 / \lambda=1)$ | ResNet32 | TRADES | 82.220 | 54.680 | 51.260 | 51.880 | 56.800 | - |
 | STD | ResNet18 | STD | 95.280 | 0.340 | 0.000 | 0.030 | 13.860 | - |
@@ -325,4 +341,62 @@ $\epsilon=16/255$ is also a usual choice.
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
 | TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 99.450 | 95.900 | 86.960 |  -   |
 | TRADES $(1/\lambda = 6)$ | mnist | TRADES-M | 99.230 | 96.950 | 90.360 |  -   |
+
+
+
+## FashionMNIST
+
+
+
+The same Setup as MNIST.
+
+
+
+### $\ell_{\infty}$
+
+
+
+|        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   |  0.3   |   0.3    | 0.3  |  0.3   |
+| :----------------------: | :---: | :------: | :----: | :----: | :-----: | :----: | :------: | :--: | :----: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |   AA   | DeepFool | BBA  |  FGSM  |
+|           STD            | mnist |   null   |        |        |         |        |          |  -   |        |
+|            AT            | mnist |   null   | 77.760 | 61.970 | 56.870  | 45.990 |  64.040  |  -   | 70.550 |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |         |        |          |  -   |        |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |        |          |  -   |        |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |         |        |          |  -   |        |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |         |        |          |  -   |        |
+
+
+
+### $\ell_2$
+
+
+
+|        $\epsilon$        |   -   |    -     |   0    |    2    |   2   |    2     |   2    |  2   |
+| :----------------------: | :---: | :------: | :----: | :-----: | :---: | :------: | :----: | :--: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-100 |  AA   | DeepFool |  C&W   | BBA  |
+|           STD            | mnist |   null   |        |         |       |          |        |  -   |
+|            AT            | mnist |   null   | 77.760 | 62.190  | 0.190 |  65.180  | 48.090 |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |         |       |          |        |  -   |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |         |       |          |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |         |       |          |        |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |         |       |          |        |  -   |
+
+
+
+
+
+### $\ell_1$
+
+
+
+|        $\epsilon$        |   -   |    -     |   0    |   10   |   10   |  10  |
+| :----------------------: | :---: | :------: | :----: | :----: | :----: | :--: |
+|          Method          |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
+|           STD            | mnist |   null   |        |        |        |  -   |
+|            AT            | mnist |   null   | 77.760 | 67.200 | 57.990 |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |        |  -   |
+|    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |        |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |        |  -   |
 
