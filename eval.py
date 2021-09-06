@@ -97,7 +97,7 @@ else:
 
 def main():
 
-    if opts.type in ('both', 'aa'):
+    if opts.atype in ('both', 'aa'):
         for cfg in cfgs_aa:
             print("=======================================================================================================")
             print(cfg)
@@ -105,7 +105,7 @@ def main():
             command = fmt_aa.format(**cfg)
             os.system(command)
 
-    if opts.type in ('both', 'wb'):
+    if opts.atype in ('both', 'wb'):
         if isinstance(opts.norm, str):
             norms = (opts.norm,)
         else:
