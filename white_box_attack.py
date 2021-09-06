@@ -56,11 +56,12 @@ def load_cfg() -> 'Config':
         model=opts.model, description=opts.description
     )
     # set logger
-    set_logger(
+    logger = set_logger(
         path=cfg.log_path, 
         log2file=opts.log2file, 
         log2console=opts.log2console
     )
+    logger.debug(opts.info_path)
 
     set_seed(opts.seed)
 

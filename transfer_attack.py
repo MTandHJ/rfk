@@ -58,11 +58,13 @@ def load_cfg() -> 'Config':
         model=mix_model, description=opts.description
     )
     # set logger
-    set_logger(
+    logger = set_logger(
         path=cfg.log_path, 
         log2file=opts.log2file, 
         log2console=opts.log2console
     )
+    logger.debug(f"source path: {opts.source_path}")
+    logger.debug(f"target path: {opts.target_path}")
 
     set_seed(opts.seed)
 

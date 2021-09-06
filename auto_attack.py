@@ -44,11 +44,12 @@ def load_cfg() -> Tuple[Config, str]:
     _, log_path = generate_path(METHOD, opts.dataset, 
                         opts.model, opts.description)
     # set logger
-    set_logger(
+    logger = set_logger(
         path=log_path,
         log2file=opts.log2file,
         log2console=opts.log2console
     )
+    logger.debug(opts.info_path)
 
     set_seed(opts.seed)
 
