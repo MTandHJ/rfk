@@ -33,12 +33,12 @@ def set_logger(
             os.path.join(path, LOGGER.filename), 
             encoding='utf-8'
         )
-        handler.setLevel(LOGGER.level)
+        handler.setLevel(LOGGER.filelevel)
         handler.setFormatter(LOGGER.formatter.filehandler)
         logger.addHandler(handler)
     if log2console:
         handler = logging.StreamHandler()
-        handler.setLevel(LOGGER.level)
+        handler.setLevel(LOGGER.consolelevel)
         handler.setFormatter(LOGGER.formatter.consolehandler)
         logger.addHandler(handler)
 

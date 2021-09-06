@@ -12,7 +12,6 @@ from tqdm import tqdm
 
 from models.base import AdversarialDefensiveModule
 from .base import AdversaryForValid
-from .dict2obj import Config
 from .config import *
 from .utils import getLogger, mkdirs
 

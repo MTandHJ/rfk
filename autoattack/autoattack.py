@@ -5,7 +5,8 @@ from torch.autograd import Variable
 import numpy as np
 import argparse
 import time
-from .other_utils import Logger
+from src.utils import getLogger
+
 
 class AutoAttack():
     def __init__(self, model, norm='Linf', eps=.3, seed=None, verbose=True,
@@ -21,7 +22,7 @@ class AutoAttack():
         self.version = version
         self.is_tf_model = is_tf_model
         self.device = device
-        self.logger = Logger(log_path)
+        self.logger = getLogger()
         
         if not self.is_tf_model:
             from .autopgd_pt import APGDAttack
@@ -71,7 +72,7 @@ class AutoAttack():
     
     def run_standard_evaluation(self, x_orig, y_orig, bs=250):
         if self.verbose:
-            print('using {} version including {}'.format(self.version,
+            self.logger.info('using {} version including {}'.format(self.version,
                 ', '.join(self.attacks_to_run)))
         
         with torch.no_grad():
@@ -91,7 +92,7 @@ class AutoAttack():
             robust_accuracy = torch.sum(robust_flags).item() / x_orig.shape[0]
                 
             if self.verbose:
-                print('initial accuracy: {:.2%}'.format(robust_accuracy))
+                self.logger.info('initial accuracy: {:.2%}'.format(robust_accuracy))
                     
             x_adv = x_orig.clone().detach()
             startt = time.time()
@@ -170,12 +171,12 @@ class AutoAttack():
                 
                     if self.verbose:
                         num_non_robust_batch = torch.sum(false_batch)    
-                        print('{} - {}/{} - {} out of {} successfully perturbed'.format(
+                        self.logger.debug('{} - {}/{} - {} out of {} successfully perturbed'.format(
                             attack, batch_idx + 1, n_batches, num_non_robust_batch, x.shape[0]))
                 
                 robust_accuracy = torch.sum(robust_flags).item() / x_orig.shape[0]
                 if self.verbose:
-                    print('robust accuracy after {}: {:.2%} (total time {:.1f} s)'.format(
+                    self.logger.info('robust accuracy after {}: {:.2%} (total time {:.1f} s)'.format(
                         attack.upper(), robust_accuracy, time.time() - startt))
                     
             # final check
@@ -184,9 +185,9 @@ class AutoAttack():
                     res = (x_adv - x_orig).abs().view(x_orig.shape[0], -1).max(1)[0]
                 elif self.norm == 'L2':
                     res = ((x_adv - x_orig) ** 2).view(x_orig.shape[0], -1).sum(-1).sqrt()
-                print('max {} perturbation: {:.5f}, nan in tensor: {}, max: {:.5f}, min: {:.5f}'.format(
+                self.logger.info('max {} perturbation: {:.5f}, nan in tensor: {}, max: {:.5f}, min: {:.5f}'.format(
                     self.norm, res.max(), (x_adv != x_adv).sum(), x_adv.max(), x_adv.min()))
-                print('robust accuracy: {:.2%}'.format(robust_accuracy))
+                self.logger.info('robust accuracy: {:.2%}'.format(robust_accuracy))
         
         return x_adv
         
@@ -200,13 +201,13 @@ class AutoAttack():
             acc += (output.max(1)[1] == y).float().sum()
             
         if self.verbose:
-            print('clean accuracy: {:.2%}'.format(acc / x_orig.shape[0]))
+            self.logger.info('clean accuracy: {:.2%}'.format(acc / x_orig.shape[0]))
         
         return acc.item() / x_orig.shape[0]
         
     def run_standard_evaluation_individual(self, x_orig, y_orig, bs=250):
         if self.verbose:
-            print('using {} version including {}'.format(self.version,
+            self.logger.info('using {} version including {}'.format(self.version,
                 ', '.join(self.attacks_to_run)))
         
         l_attacks = self.attacks_to_run
@@ -221,14 +222,14 @@ class AutoAttack():
             if verbose_indiv:    
                 acc_indiv  = self.clean_accuracy(adv[c], y_orig, bs=bs)
                 space = '\t \t' if c == 'fab' else '\t'
-                print('robust accuracy by {} {} {:.2%} \t (time attack: {:.1f} s)'.format(
+                self.logger.info('robust accuracy by {} {} {:.2%} \t (time attack: {:.1f} s)'.format(
                     c.upper(), space, acc_indiv,  time.time() - startt))
         
         return adv
         
     def set_version(self, version='standard'):
         if self.verbose:
-            print('setting parameters for {} version'.format(version))
+            self.logger.info('setting parameters for {} version'.format(version))
         
         if version == 'standard':
             self.attacks_to_run = ['apgd-ce', 'apgd-t', 'fab-t', 'square']

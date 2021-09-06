@@ -4,7 +4,6 @@ from typing import Tuple
 import torch
 import argparse
 from src.loadopts import *
-from models.base import AdversarialDefensiveModule
 from autoattack import AutoAttack
 
 
@@ -24,6 +23,10 @@ parser.add_argument("--epsilon", type=float, default=8/255)
 parser.add_argument("--version", choices=("standard", "plus"), default="standard")
 parser.add_argument("-b", "--batch_size", type=int, default=256)
 
+parser.add_argument("--log2file", action="store_false", default=True,
+                help="False: remove file handler")
+parser.add_argument("--log2console", action="store_false", default=True,
+                help="False: remove console handler if log2file is True ...")
 parser.add_argument("--seed", type=int, default=1)
 parser.add_argument("-m", "--description", type=str, default="attack")
 opts = parser.parse_args()
@@ -33,9 +36,20 @@ opts.description = FMT.format(**opts.__dict__)
 
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
-    from src.utils import gpu, load, set_seed
+    from src.utils import gpu, load, set_seed, set_logger
 
     cfg = Config()
+
+    # generate the log path
+    _, log_path = generate_path(METHOD, opts.dataset, 
+                        opts.model, opts.description)
+    # set logger
+    set_logger(
+        path=log_path,
+        log2file=opts.log2file,
+        log2console=opts.log2console
+    )
+
     set_seed(opts.seed)
 
     # load the model
@@ -65,9 +79,6 @@ def load_cfg() -> Tuple[Config, str]:
     cfg['data'] = torch.stack(data)
     cfg['targets'] = torch.tensor(targets, dtype=torch.long)
 
-    # generate the log path
-    _, log_path = generate_path(METHOD, opts.dataset, 
-                        opts.model, opts.description)
 
     cfg['attacker'] = AutoAttack(
         model,
@@ -87,9 +98,8 @@ def main(attacker, data, targets):
 
 if __name__ == "__main__":
     from torch.utils.tensorboard import SummaryWriter
-    from src.utils import mkdirs, readme
+    from src.utils import readme
     cfg, log_path = load_cfg()
-    mkdirs(log_path)
     readme(log_path, opts, mode="a")
     writter = SummaryWriter(log_dir=log_path, filename_suffix=METHOD)
 

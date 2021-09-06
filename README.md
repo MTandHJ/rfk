@@ -361,10 +361,10 @@ The same Setup as MNIST.
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |   AA   | DeepFool | BBA  |  FGSM  |
 |           STD            | mnist |   null   |        |        |         |        |          |  -   |        |
 |            AT            | mnist |   null   | 77.760 | 61.970 | 56.870  | 45.990 |  64.040  |  -   | 70.550 |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |         |        |          |  -   |        |
+|   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 61.400 | 55.820  | 24.250 |  56.350  |  -   | 68.210 |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |        |          |  -   |        |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |         |        |          |  -   |        |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |         |        |          |  -   |        |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 86.060 | 58.070 | 51.170  | 29.610 |  56.130  |  -   | 67.890 |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M | 78.050 | 56.360 | 50.000  | 34.22  |  54.910  |  -   | 62.490 |
 
 
 
@@ -377,10 +377,10 @@ The same Setup as MNIST.
 |          Method          |  Net  |    LP    | TA(%)  | PGD-100 |  AA   | DeepFool |  C&W   | BBA  |
 |           STD            | mnist |   null   |        |         |       |          |        |  -   |
 |            AT            | mnist |   null   | 77.760 | 62.190  | 0.190 |  65.180  | 48.090 |  -   |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |        |         |       |          |        |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 64.140  | 2.350 |  66.160  | 25.530 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |         |       |          |        |  -   |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |         |       |          |        |  -   |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |         |       |          |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 86.060 | 65.200  | 3.460 |  65.850  | 26.610 |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M | 78.050 | 56.300  | 1.650 |  57.650  | 22.150 |  -   |
 
 
 
@@ -395,8 +395,8 @@ The same Setup as MNIST.
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
 |           STD            | mnist |   null   |        |        |        |  -   |
 |            AT            | mnist |   null   | 77.760 | 67.200 | 57.990 |  -   |
-|   ALP $(\lambda=0.5)$    | mnist |   null   |        |        |        |  -   |
+|   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 65.740 | 53.650 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
-| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M |        |        |        |  -   |
-| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M |        |        |        |  -   |
+| TRADES $(1 / \lambda=1)$ | mnist | TRADES-M | 86.060 | 68.880 | 58.400 |  -   |
+| TRADES $(1/\lambda = 6)$ | mnist | TRADES-M | 78.050 | 63.980 | 50.340 |  -   |
 
