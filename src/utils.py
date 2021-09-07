@@ -41,6 +41,9 @@ def set_logger(
         handler.setLevel(LOGGER.consolelevel)
         handler.setFormatter(LOGGER.formatter.consolehandler)
         logger.addHandler(handler)
+    logger.debug("========================================================================")
+    logger.debug("========================================================================")
+    logger.debug("========================================================================")
     return logger
 
 def getLogger():
