@@ -64,7 +64,7 @@ python TRADES.py resnet32 cifar10 -lp=default --epochs=110 -wd=0.0005
 #### MNIST
 
 ```
-python STD.py mnist mnist -lp=null --epochs=50 -lr=0.1 -wd=0 -mom=0.9 -b=128
+python STD.py mnist mnist -lp=null --epochs=50 --optimizer=adam -lr=0.0001 -wd=0  -b=128
 python AT.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
 python ALP.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
 python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
@@ -77,7 +77,7 @@ python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -
 
 
 ```
-python STD.py mnist fashionmnist -lp=null --epochs=50 -lr=0.1 -wd=0 -mom=0.9 -b=128
+python STD.py mnist fashionmnist -lp=null --epochs=50 --optimizer=adam -lr=0.0001 -wd=0  -b=128
 python AT.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
 python ALP.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
 python TRADES.py mnist fashionmnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
@@ -302,7 +302,7 @@ $\epsilon=16/255$ is also a usual choice.
 |        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   |  0.3   |   0.3    | 0.3  |  0.3   |
 | :----------------------: | :---: | :------: | :----: | :----: | :-----: | :----: | :------: | :--: | :----: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |   AA   | DeepFool | BBA  |  FGSM  |
-|           STD            | mnist |   null   | 99.230 | 28.030 | 27.990  |  0.0   |  0.910   |  -   | 83.900 |
+|           STD            | mnist |   null   |        |        |         |        |          |  -   |        |
 |            AT            | mnist |   null   | 99.460 | 96.270 | 95.480  | 92.780 |  96.890  |  -   | 97.500 |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 99.410 | 96.710 | 96.080  | 92.600 |  97.170  |  -   | 97.840 |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |        |          |  -   |        |
@@ -319,7 +319,7 @@ $\epsilon=16/255$ is also a usual choice.
 |        $\epsilon$        |   -   |    -     |   0    |    2    |   2    |    2     |   2    |  2   |
 | :----------------------: | :---: | :------: | :----: | :-----: | :----: | :------: | :----: | :--: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-100 |   AA   | DeepFool |  C&W   | BBA  |
-|           STD            | mnist |   null   | 99.230 | 72.860  | 0.000  |  0.860   | 1.330  |  -   |
+|           STD            | mnist |   null   |        |         |        |          |        |  -   |
 |            AT            | mnist |   null   | 99.460 | 92.710  | 14.100 |  96.010  | 72.410 |  -   |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 99.410 | 95.720  | 16.900 |  97.620  | 89.070 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |         |        |          |        |  -   |
@@ -335,7 +335,7 @@ $\epsilon=16/255$ is also a usual choice.
 |        $\epsilon$        |   -   |    -     |   0    |   10   |   10   |  10  |
 | :----------------------: | :---: | :------: | :----: | :----: | :----: | :--: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
-|           STD            | mnist |   null   | 99.230 | 81.930 | 74.700 |  -   |
+|           STD            | mnist |   null   |        |        |        |  -   |
 |            AT            | mnist |   null   | 99.460 | 95.890 | 86.420 |  -   |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 99.410 | 97.910 | 90.740 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
@@ -359,7 +359,7 @@ The same Setup as MNIST.
 |        $\epsilon$        |   -   |    -     |   0    |  0.3   |   0.3   |  0.3   |   0.3    | 0.3  |  0.3   |
 | :----------------------: | :---: | :------: | :----: | :----: | :-----: | :----: | :------: | :--: | :----: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | PGD-100 |   AA   | DeepFool | BBA  |  FGSM  |
-|           STD            | mnist |   null   |        |        |         |        |          |  -   |        |
+|           STD            | mnist |   null   | 91.82  |  0.00  |  0.00   |  0.00  |   0.00   |  -   |  2.12  |
 |            AT            | mnist |   null   | 77.760 | 61.970 | 56.870  | 45.990 |  64.040  |  -   | 70.550 |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 61.400 | 55.820  | 24.250 |  56.350  |  -   | 68.210 |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |         |        |          |  -   |        |
@@ -375,7 +375,7 @@ The same Setup as MNIST.
 |        $\epsilon$        |   -   |    -     |   0    |    2    |   2   |    2     |   2    |  2   |
 | :----------------------: | :---: | :------: | :----: | :-----: | :---: | :------: | :----: | :--: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-100 |  AA   | DeepFool |  C&W   | BBA  |
-|           STD            | mnist |   null   |        |         |       |          |        |  -   |
+|           STD            | mnist |   null   | 91.82  |  0.02   | 0.00  |   0.02   |  0.00  |  -   |
 |            AT            | mnist |   null   | 77.760 | 62.190  | 0.190 |  65.180  | 48.090 |  -   |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 64.140  | 2.350 |  66.160  | 25.530 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |         |       |          |        |  -   |
@@ -393,7 +393,7 @@ The same Setup as MNIST.
 |        $\epsilon$        |   -   |    -     |   0    |   10   |   10   |  10  |
 | :----------------------: | :---: | :------: | :----: | :----: | :----: | :--: |
 |          Method          |  Net  |    LP    | TA(%)  | PGD-50 | SLIDE  | BBA  |
-|           STD            | mnist |   null   |        |        |        |  -   |
+|           STD            | mnist |   null   | 91.82  | 24.50  |  8.27  |  -   |
 |            AT            | mnist |   null   | 77.760 | 67.200 | 57.990 |  -   |
 |   ALP $(\lambda=0.5)$    | mnist |   null   | 83.080 | 65.740 | 53.650 |  -   |
 |    ALP $(\lambda=1)$     | mnist |   null   |        |        |        |  -   |
