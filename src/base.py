@@ -10,9 +10,9 @@ import os
 
 from models.base import AdversarialDefensiveModule
 from .criteria import LogitsAllFalse
-from .utils import AverageMeter, ProgressMeter, timemeter
+from .utils import AverageMeter, ProgressMeter, timemeter, getLogger
 from .loss_zoo import cross_entropy, kl_divergence, lploss
-from .config import SAVED_FILENAME, BOUNDS, PREPROCESSING
+from .config import SAVED_FILENAME, POST_BESTNAT, POST_BESTROB, BOUNDS, PREPROCESSING
 
 
 def enter_attack_exit(func) -> Callable:
@@ -43,6 +43,35 @@ class Coach:
         self.loss = AverageMeter("Loss")
         self.acc = AverageMeter("Acc", fmt=".3%")
         self.progress = ProgressMeter(self.loss, self.acc)
+
+        self._best_nat = 0.
+        self._best_rob = 0.
+
+    def save_best_nat(self, acc_nat: float, path: str, postfix: str = POST_BESTNAT):
+        if acc_nat > self._best_nat:
+            self._best_nat = acc_nat
+            self.save(path, '_'.join((SAVED_FILENAME, postfix)))
+            return 1
+        else:
+            return 0
+    
+    def save_best_rob(self, acc_rob: float, path: str, postfix: str = POST_BESTROB):
+        if acc_rob > self._best_rob:
+            self._best_rob = acc_rob
+            self.save(path, '_'.join((SAVED_FILENAME, postfix)))
+            return 1
+        else:
+            return 0
+
+    def check_best(
+        self, acc_nat: float, acc_rob: float,
+        path: str, epoch: int = 8888
+    ):
+        logger = getLogger()
+        if self.save_best_nat(acc_nat, path):
+            logger.info(f"[Coach] Saving the best nat ({acc_nat:.3%}) model at epoch [{epoch:3d}]")
+        if self.save_best_rob(acc_rob, path):
+            logger.info(f"[Coach] Saving the best rob ({acc_rob:.3%}) model at epoch [{epoch:3d}]")
         
     def save(self, path: str, filename: str = SAVED_FILENAME) -> None:
         torch.save(self.model.state_dict(), os.path.join(path, filename))

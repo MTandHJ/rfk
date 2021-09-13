@@ -2,6 +2,7 @@
 from typing import TypeVar, Callable, Optional, Tuple, Dict
 import numpy as np
 import torch
+from torch.utils.data._utils.pin_memory import pin_memory
 import torchvision
 import torchvision.transforms as T
 import foolbox as fb
@@ -221,15 +222,15 @@ class _TQDMDataLoader(torch.utils.data.DataLoader):
 
 def _get_sampler(
     dataset: torch.utils.data.Dataset,
-    rate: float = .1,
-    shuffle: bool = True, seed: int = 1
+    ratio: float = .1, seed: int = VALIDSEED,
+    shuffle: bool = True
 ) -> torch.utils.data.SubsetRandomSampler:
     datasize = len(dataset)
     indices = list(range(datasize))
     if shuffle:
         np.random.seed(seed)
         np.random.shuffle(indices)
-    validsize = int(rate * datasize)
+    validsize = int(ratio * datasize)
     train_indices, valid_indices = indices[validsize:], indices[:validsize]
     trainsampler = torch.utils.data.SubsetRandomSampler(train_indices)
     validsampler = torch.utils.data.SubsetRandomSampler(valid_indices)
@@ -239,20 +240,28 @@ def load_dataloader(
     dataset: torch.utils.data.Dataset, 
     batch_size: int, 
     train: bool = True, 
+    ratio: float = .1, seed: int = VALIDSEED,
     show_progress: bool = False
 ) -> torch.utils.data.DataLoader:
 
     dataloader = _TQDMDataLoader if show_progress else torch.utils.data.DataLoader
     if train:
-        dataloader = dataloader(dataset, batch_size=batch_size,
-                                        shuffle=True, num_workers=NUM_WORKERS,
-                                        pin_memory=PIN_MEMORY)
+        trainsampler, validsampler = _get_sampler(dataset, rate=ratio, seed=seed, shuffle=True)
+        trainloader = dataloader(
+            dataset, batch_size=batch_size, sampler=trainsampler,
+            num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
+        )
+        validloader = dataloader(
+            dataset, batch_size=batch_size, sampler=validsampler,
+            num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
+        )
+        return trainloader, validloader
     else:
-        dataloader = dataloader(dataset, batch_size=batch_size,
-                                        shuffle=False, num_workers=NUM_WORKERS,
-                                        pin_memory=PIN_MEMORY)
-
-    return dataloader
+        testloader = dataloader(
+            dataset, batch_size=batch_size, shuffle=False,
+            num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
+        )
+        return testloader
 
 
 def load_optimizer(

@@ -162,9 +162,10 @@ class ImageMeter:
         self.fp[0, 0].legend()
         plt.tight_layout()
     
-    def save(self, writter: 'SummaryWriter', postfix: str = '') -> None:
-        filename = f"{self.title}{postfix}"
-        writter.add_figure(filename, self.fp.fig)
+    def save(self, path: str, postfix: str = '') -> None:
+        filename = f"{self.title}{postfix}.png"
+        _file = os.path.join((path, filename))
+        self.fp.savefig(_file)
 
 
 

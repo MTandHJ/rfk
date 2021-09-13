@@ -35,6 +35,8 @@ class _GaussBlur:
 
 ROOT = "../data" # the path saving the data
 SAVED_FILENAME = "paras.pt" # the filename of saved model paramters
+POST_BESTNAT = "nat"
+POST_BESTROB = "rob"
 INFO_PATH = "./infos/{method}/{dataset}-{model}/{description}"
 LOG_PATH = "./logs/{method}/{dataset}-{model}/{description}-{time}"
 TIMEFMT = "%m%d%H"
@@ -48,6 +50,9 @@ LOGGER = Config(
         consolehandler=logging.Formatter('%(message)s')
     )
 )
+
+# the seed for validloader preparation
+VALIDSEED = 1
 
 
 TRANSFORMS = {
