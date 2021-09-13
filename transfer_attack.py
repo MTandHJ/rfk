@@ -9,6 +9,7 @@ the target model...
 import argparse
 from src.loadopts import *
 from src.utils import timemeter
+from src.config import SAVED_FILENAME
 
 METHOD = "Transfer"
 FMT = "{description}={attack}-{epsilon:.4f}-{stepsize}-{steps}"
@@ -19,6 +20,8 @@ parser.add_argument("source_path", type=str)
 parser.add_argument("target_model", type=str)
 parser.add_argument("target_path", type=str)
 parser.add_argument("dataset", type=str)
+parser.add_argument("--source_filename", type=str, default=SAVED_FILENAME)
+parser.add_argument("--target_filename", type=str, default=SAVED_FILENAME)
 
 # adversarial settings
 parser.add_argument("--attack", type=str, default="pgd-linf")
@@ -75,6 +78,7 @@ def load_cfg() -> 'Config':
     load(
         model=source_model, 
         path=opts.source_path,
+        filename=opts.source_filename,
         device=device
     )
 
@@ -84,7 +88,8 @@ def load_cfg() -> 'Config':
     device = gpu(target_model)
     load(
         model=target_model, 
-        filename=opts.target_path + "/paras.pt", 
+        path=opts.target_path,
+        filename=opts.target_filename,
         device=device
     )
 

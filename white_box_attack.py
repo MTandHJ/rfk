@@ -5,6 +5,7 @@ import torch
 import argparse
 from src.loadopts import *
 from src.utils import timemeter
+from src.config import SAVED_FILENAME
 
 
 METHOD = "WhiteBox"
@@ -15,6 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("model", type=str)
 parser.add_argument("dataset", type=str)
 parser.add_argument("info_path", type=str)
+parser.add_argument("--filename", type=str, default=SAVED_FILENAME)
 
 # adversarial settings
 parser.add_argument("--attack", type=str, default="pgd-linf")
@@ -72,6 +74,7 @@ def load_cfg() -> 'Config':
     load(
         model=model, 
         path=opts.info_path,
+        filename=opts.filename,
         device=device
     )
 
