@@ -235,7 +235,7 @@ def main(
             acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
             coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
 
-        running_loss = coach.adv_train(trainloader, attacker, leverage=opts.leverage, epoch=epoch)
+        running_loss = coach.adv_train(trainloader, attacker, epoch=epoch)
 
     coach.save(info_path)
 

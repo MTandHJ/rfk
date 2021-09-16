@@ -206,7 +206,7 @@ def preparation(valider):
 
 @timemeter("Main")
 def main(
-    coach, attacker, valider, 
+    coach, valider, 
     trainloader, validloader, start_epoch, 
     info_path, log_path, testloader=None
 ):  
@@ -230,7 +230,7 @@ def main(
             acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
             coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
 
-        running_loss = coach.train(trainloader, attacker, leverage=opts.leverage, epoch=epoch)
+        running_loss = coach.train(trainloader, epoch=epoch)
 
     coach.save(info_path)
 
