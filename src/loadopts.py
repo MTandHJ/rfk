@@ -246,7 +246,7 @@ def load_dataloader(
 
     dataloader = _TQDMDataLoader if show_progress else torch.utils.data.DataLoader
     if train:
-        trainsampler, validsampler = _get_sampler(dataset, rate=ratio, seed=seed, shuffle=True)
+        trainsampler, validsampler = _get_sampler(dataset, ratio=ratio, seed=seed, shuffle=True)
         trainloader = dataloader(
             dataset, batch_size=batch_size, sampler=trainsampler,
             num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
