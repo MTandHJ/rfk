@@ -163,7 +163,7 @@ class ImageMeter:
     
     def save(self, path: str, postfix: str = '') -> None:
         filename = f"{self.title}{postfix}.png"
-        _file = os.path.join((path, filename))
+        _file = os.path.join(path, filename)
         self.fp.savefig(_file)
 
 
