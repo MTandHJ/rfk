@@ -70,7 +70,7 @@ def load_cfg() -> Tuple[Config, str]:
     # load the testset
     testset = load_dataset(
         dataset_type=opts.dataset, 
-        transform='None',
+        transform='null',
         train=False
     )
     data = []

@@ -29,8 +29,6 @@ parser.add_argument("--steps", type=int, default=20)
 
 # basic settings
 parser.add_argument("-b", "--batch_size", type=int, default=256)
-parser.add_argument("--transform", type=str, default='default', 
-                help="the data augmentation which will be applied in training mode.")
 parser.add_argument("--progress", action="store_false", default=True, 
                 help="show the progress if true")
 parser.add_argument("--log2file", action="store_false", default=True,
@@ -81,7 +79,7 @@ def load_cfg() -> 'Config':
     # load the testset
     testset = load_dataset(
         dataset_type=opts.dataset,
-        transform=opts.transform,
+        transform='null',
         train=False
     )
     cfg['testloader'] = load_dataloader(

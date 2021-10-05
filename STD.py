@@ -11,7 +11,6 @@ from src.utils import timemeter
 
 METHOD = "STD"
 SAVE_FREQ = 5
-PRINT_FREQ = 20
 FMT = "{description}={learning_policy}-{optimizer}-{lr}" \
         "={batch_size}={transform}"
 
@@ -39,14 +38,13 @@ parser.add_argument("--transform", type=str, default='default',
                 help="the data augmentation which will be applied during training.")
 
 # the ratio of valid dataset
-parser.add_argument("--ratio", type=float, default=.1,
-                help="the ratio of valid dataset")
+parser.add_argument("--ratio", type=float, default=.0,
+                help="the ratio of validation; use testset if ratio is 0.")
 
 # eval
 parser.add_argument("--eval-train", action="store_true", default=False)
 parser.add_argument("--eval-valid", action="store_false", default=True)
-parser.add_argument("--eval-test", action="store_true", default=False)
-parser.add_argument("--eval-freq", type=int, default=1,
+parser.add_argument("--eval-freq", type=int, default=5,
                 help="for valid dataset only")
 
 parser.add_argument("--resume", action="store_true", default=False)
@@ -104,26 +102,21 @@ def load_cfg() -> Tuple[Config, str]:
         ratio=opts.ratio,
         show_progress=opts.progress
     )
-    if opts.eval_test:
-        logger.info(
-            "[SetUp] Loading testset ..."
+    if opts.ratio == 0:
+        logger.warning(
+            "[Warning] The ratio of validation is 0. Use testset instead."
         )
         testset = load_dataset(
             dataset_type=opts.dataset,
-            transform=opts.transform,
+            transform='null',
             train=False
         )
-        cfg['testloader'] = load_dataloader(
+        cfg['validloader'] = load_dataloader(
             dataset=testset,
             batch_size=opts.batch_size,
             train=False,
             show_progress=opts.progress
         )
-    if opts.ratio == 0 and opts.eval_valid:
-        logger.warning(
-            "[Warning] eval_valid is True but the ratio of valid dataset is 0. eval_valid = False hereafter."
-        )
-        opts.eval_valid = False
 
     # load the optimizer and learning_policy
     optimizer = load_optimizer(
@@ -178,23 +171,19 @@ def preparation(valider):
     from src.dict2obj import Config
     logger = getLogger()
     acc_logger = Config(
+        train=TrackMeter("Train"),
         valid=TrackMeter("Valid")
     )
     rob_logger = Config(
+        train=TrackMeter("Train"),
         valid=TrackMeter("Valid")
     )
-    if opts.eval_train:
-        acc_logger['train'] = TrackMeter("Train")
-        rob_logger['train'] = TrackMeter("Train")
-    if opts.eval_test:
-        acc_logger['test'] = TrackMeter("Test")
-        rob_logger['test'] = TrackMeter("Test")
 
     acc_logger.plotter = ImageMeter(*acc_logger.values(), title="Accuracy")
     rob_logger.plotter = ImageMeter(*rob_logger.values(), title="Robustness")
 
     @timemeter("Evaluation")
-    def evaluate(dataloader, prefix='Valid', epoch = 8888):
+    def evaluate(dataloader, prefix='Valid', epoch=8888):
         acc_nat, acc_adv = valider.evaluate(dataloader)
         logger.info(f"{prefix} >>> [TA: {acc_nat:.3%}]    [RA: {acc_adv:.3%}]")
         getattr(acc_logger, prefix.lower())(data=acc_nat, T=epoch)
@@ -208,7 +197,7 @@ def preparation(valider):
 def main(
     coach, valider, 
     trainloader, validloader, start_epoch, 
-    info_path, log_path, testloader=None
+    info_path, log_path
 ):  
 
     from src.utils import save_checkpoint
@@ -221,26 +210,22 @@ def main(
         if epoch % SAVE_FREQ == 0:
             save_checkpoint(info_path, coach.model, coach.optimizer, coach.learning_policy, epoch)
 
-        if epoch % PRINT_FREQ == 0:
+        if epoch % opts.eval_freq == 0:
             if opts.eval_train:
                 evaluate(trainloader, prefix='Train', epoch=epoch)
-            if opts.eval_test:
-                evaluate(testloader, prefix='Test', epoch=epoch)
-        if opts.eval_valid and epoch % opts.eval_freq == 0:
-            acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
-            coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
+            if opts.eval_valid:
+                acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
+                coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
 
         running_loss = coach.train(trainloader, epoch=epoch)
 
+    # save the model
     coach.save(info_path)
 
-    if opts.eval_train:
-        evaluate(trainloader, prefix='Train', epoch=epoch)
-    if opts.eval_test:
-        evaluate(testloader, prefix='Test', epoch=epoch)
-    if opts.eval_valid:
-        acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
-        coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)   
+    # final evaluation
+    evaluate(trainloader, prefix='Train', epoch=opts.epochs)
+    acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=opts.epochs)
+    coach.check_best(acc_nat, acc_rob, info_path, epoch=opts.epochs) 
 
     acc_logger.plotter.plot()
     rob_logger.plotter.plot()

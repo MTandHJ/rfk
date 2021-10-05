@@ -69,14 +69,6 @@ TRANSFORMS = {
             T.RandomHorizontalFlip(),
             T.ToTensor()
         )),
-        'simclr': T.Compose((
-            T.RandomResizedCrop(32, scale=(0.2, 1.0)),
-            T.RandomApply([T.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
-            T.RandomGrayscale(p=0.2),
-            T.RandomApply([_GaussBlur()], p=0.5),
-            T.RandomHorizontalFlip(),
-            T.ToTensor()
-        ))
     },
     "cifar100": {
         'default': T.Compose((
@@ -85,16 +77,10 @@ TRANSFORMS = {
             T.RandomHorizontalFlip(),
             T.ToTensor()
         )),
-        'simclr': T.Compose((
-            T.RandomResizedCrop(32, scale=(0.2, 1.0)),
-            T.RandomApply([T.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
-            T.RandomGrayscale(p=0.2),
-            T.RandomApply([_GaussBlur()], p=0.5),
-            T.RandomHorizontalFlip(),
-            T.ToTensor()
-        ))
     }
 }
+for dst in TRANSFORMS.values():
+    dst['null'] = T.ToTensor()
 
 VALIDER = {
     "mnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
@@ -137,7 +123,7 @@ LEARNING_POLICY = {
    "default": (
         "MultiStepLR",
         Config(
-            milestones=[50, 75],
+            milestones=[100, 105],
             gamma=0.1,
             prefix="Default leaning policy will be applied:"
         )
