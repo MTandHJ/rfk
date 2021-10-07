@@ -69,9 +69,9 @@ class Coach:
     ):
         logger = getLogger()
         if self.save_best_nat(acc_nat, path):
-            logger.debug(f"[Coach] Saving the best nat ({acc_nat:.3%}) model at epoch [{epoch:3d}]")
+            logger.debug(f"[Coach] Saving the best nat ({acc_nat:.3%}) model at epoch [{epoch}]")
         if self.save_best_rob(acc_rob, path):
-            logger.debug(f"[Coach] Saving the best rob ({acc_rob:.3%}) model at epoch [{epoch:3d}]")
+            logger.debug(f"[Coach] Saving the best rob ({acc_rob:.3%}) model at epoch [{epoch}]")
         
     def save(self, path: str, filename: str = SAVED_FILENAME) -> None:
         torch.save(self.model.state_dict(), os.path.join(path, filename))
