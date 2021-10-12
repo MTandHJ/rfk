@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
 
-from logging import info
 from typing import Tuple
 import argparse
-from torch import log
 
-from torch.utils import data
 from src.loadopts import *
 from src.utils import timemeter
 

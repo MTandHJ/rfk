@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 
-from copy import deepcopy
 from typing import Tuple
 import argparse
 from src.loadopts import *
