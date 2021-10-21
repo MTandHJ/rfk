@@ -63,7 +63,7 @@ parser.add_argument("--log2file", action="store_false", default=True,
 parser.add_argument("--log2console", action="store_false", default=True,
                 help="False: remove console handler if log2file is True ...")
 parser.add_argument("--seed", type=int, default=1)
-parser.add_argument("-m", "--description", type=str, default="TRADES")
+parser.add_argument("-m", "--description", type=str, default=METHOD)
 opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
 
