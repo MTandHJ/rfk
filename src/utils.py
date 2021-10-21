@@ -13,7 +13,6 @@ import logging
 import time
 import random
 import os
-import sys
 import copy
 import pickle
 

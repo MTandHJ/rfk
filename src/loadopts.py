@@ -2,7 +2,6 @@
 from typing import TypeVar, Callable, Optional, Tuple, Dict
 import numpy as np
 import torch
-from torch.utils.data._utils.pin_memory import pin_memory
 import torchvision
 import torchvision.transforms as T
 import foolbox as fb
