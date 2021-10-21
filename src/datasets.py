@@ -1,23 +1,16 @@
 
 
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Any
 from torch.utils.data import Dataset
 import torchvision.transforms as T
+from .utils import getLogger
 
 
 
-AUGMENTATIONS = {
-    'none' : lambda x: x,
-    'tensor': T.ToTensor(),
-    'cifar': T.Compose((
-            T.Pad(4, padding_mode='reflect'),
-            T.RandomCrop(32),
-            T.RandomHorizontalFlip(),
-            T.ToTensor()
-        )),
-}
+class IdentityTransform:
 
-
+    def __call__(self, x: Any) -> Any:
+        return x
 
 class OrderTransform:
 
@@ -43,7 +36,12 @@ class WrapperSet(Dataset):
 
         self.data = dataset
 
-        counts = len(self.data[0])
+        try:
+            counts = len(self.data[0])
+        except IndexError:
+            getLogger().info("[Dataset] zero-size dataset, skip ...")
+            return
+
         if transforms is None:
             transforms = ['none'] * counts
         else:
@@ -60,4 +58,16 @@ class WrapperSet(Dataset):
     def __getitem__(self, index: int):
         data = self.data[index]
         return self.transforms(data)
+
+
+AUGMENTATIONS = {
+    'none' : IdentityTransform(),
+    'tensor': T.ToTensor(),
+    'cifar': T.Compose((
+            T.Pad(4, padding_mode='reflect'),
+            T.RandomCrop(32),
+            T.RandomHorizontalFlip(),
+            T.ToTensor()
+        )),
+}
 

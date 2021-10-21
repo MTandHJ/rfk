@@ -44,8 +44,8 @@ VALIDSEED = 1
 TRANSFORMS = {
     'mnist': 'tensor,none',
     'fashionmnist': 'tensor,none',
-    'cifar10': 'cifar,none'
-    'cifar100': 'cifar,none'
+    'cifar10': 'cifar,none',
+    'cifar100': 'cifar,none',
     'validation': 'tensor,none'
 }
 
