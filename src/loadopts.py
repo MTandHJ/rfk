@@ -26,7 +26,7 @@ class DatasetNotIncludeError(Exception): pass
 
 # return the num_classes of corresponding data set
 def get_num_classes(dataset_type: str) -> int:
-    if dataset_type in ('mnist', 'fashionmnist', 'cifar10'):
+    if dataset_type in ('mnist', 'fashionmnist', 'svhn', 'cifar10'):
         return 10
     elif dataset_type in ('cifar100', ):
         return 100
@@ -153,28 +153,30 @@ def _dataset(
     Dataset:
     mnist: MNIST
     fashionmnist: FashionMNIST
+    svhn: SVHN
     cifar10: CIFAR-10
     cifar100: CIFAR-100
     """
     if dataset_type == "mnist":
         dataset = torchvision.datasets.MNIST(
-            root=ROOT, train=train, download=False,
-            transform=None
+            root=ROOT, train=train, download=False
         )
     elif dataset_type == "fashionmnist":
         dataset = torchvision.datasets.FashionMNIST(
-            root=ROOT, train=train, download=False,
-            transform=None
+            root=ROOT, train=train, download=False
+        )
+    elif dataset_type == "svhn":
+        split = 'train' if train else 'test'
+        dataset = torchvision.datasets.SVHN(
+            root=ROOT, split=split, download=False
         )
     elif dataset_type == "cifar10":
         dataset = torchvision.datasets.CIFAR10(
-            root=ROOT, train=train, download=False,
-            transform=None
+            root=ROOT, train=train, download=False
         )
     elif dataset_type == "cifar100":
         dataset = torchvision.datasets.CIFAR100(
             root=ROOT, train=train, download=False,
-            transform=None
         )
     else:
         raise DatasetNotIncludeError("Dataset {0} is not included." \

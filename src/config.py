@@ -44,6 +44,7 @@ VALIDSEED = 1
 TRANSFORMS = {
     'mnist': 'tensor,none',
     'fashionmnist': 'tensor,none',
+    'svhn': 'tensor,none',
     'cifar10': 'cifar,none',
     'cifar100': 'cifar,none',
     'validation': 'tensor,none'
@@ -52,6 +53,7 @@ TRANSFORMS = {
 VALIDER = {
     "mnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
     "fashionmnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),
+    "svhn": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255),
     "cifar10": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255),
     "cifar100": (Config(attack_type="pgd-linf", stepsize=0.25, steps=10), 8/255)
 }
@@ -66,6 +68,7 @@ PREPROCESSING = None # for fb.attacks.Attack
 MEANS = {
     "mnist": None,
     "fashionmnist": None,
+    'svhn': [0.5, 0.5, 0.5],
     "cifar10": [0.4914, 0.4824, 0.4467],
     "cifar100": [0.5071, 0.4867, 0.4408]
 }
@@ -73,6 +76,7 @@ MEANS = {
 STDS = {
     "mnist": None,
     "fashionmnist": None,
+    'svhn': [0.5, 0.5, 0.5],
     "cifar10": [0.2471, 0.2435, 0.2617],
     "cifar100": [0.2675, 0.2565, 0.2761]
 }
