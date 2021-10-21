@@ -13,23 +13,9 @@
 
 
 
-import torchvision.transforms as T
-import random
 import logging
-from PIL import ImageFilter
 from .dict2obj import Config
 
-
-
-class _GaussBlur:
-
-    def __init__(self, sigma=(.1, 2.)):
-        self.sigma = sigma
-
-    def __call__(self, x):
-        sigma = random.uniform(self.sigma[0], self.sigma[1])
-        x = x.filter(ImageFilter.GaussianBlur(radius=sigma))
-        return x
 
 
 
@@ -54,33 +40,14 @@ LOGGER = Config(
 # the seed for validloader preparation
 VALIDSEED = 1
 
-
+# default transforms
 TRANSFORMS = {
-    "mnist": {
-        'default': T.ToTensor()
-    },
-    "fashionmnist": {
-        'default': T.ToTensor()
-    },
-    "cifar10": {
-        'default': T.Compose((
-            T.Pad(4, padding_mode='reflect'),
-            T.RandomCrop(32),
-            T.RandomHorizontalFlip(),
-            T.ToTensor()
-        )),
-    },
-    "cifar100": {
-        'default': T.Compose((
-            T.Pad(4, padding_mode='reflect'),
-            T.RandomCrop(32),
-            T.RandomHorizontalFlip(),
-            T.ToTensor()
-        )),
-    }
+    'mnist': 'tensor,none',
+    'fashionmnist': 'tensor,none',
+    'cifar10': 'cifar,none'
+    'cifar100': 'cifar,none'
+    'validation': 'tensor,none'
 }
-for dst in TRANSFORMS.values():
-    dst['null'] = T.ToTensor()
 
 VALIDER = {
     "mnist": (Config(attack_type="pgd-linf", stepsize=0.033333, steps=100), 0.3),

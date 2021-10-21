@@ -34,7 +34,7 @@ parser.add_argument("-lp", "--learning_policy", type=str, default="STD",
 parser.add_argument("--epochs", type=int, default=164)
 parser.add_argument("-b", "--batch_size", type=int, default=128)
 parser.add_argument("--transform", type=str, default='default', 
-                help="the data augmentation which will be applied during training.")
+                help="the data augmentations which will be applied during training.")
 
 # the ratio of valid dataset
 parser.add_argument("--ratio", type=float, default=.0,
@@ -87,35 +87,34 @@ def load_cfg() -> Tuple[Config, str]:
     model.set_normalizer(load_normalizer(opts.dataset))
     device = gpu(model)
 
-
     # load the dataset
-    trainset = load_dataset(
-        dataset_type=opts.dataset, 
-        transform=opts.transform, 
-        train=True
-    )
-    cfg['trainloader'], cfg['validloader'] = load_dataloader(
-        dataset=trainset, 
-        batch_size=opts.batch_size, 
-        train=True,
+    trainset, validset = load_dataset(
+        dataset_type=opts.dataset,
+        transforms=opts.transform,
         ratio=opts.ratio,
-        show_progress=opts.progress
+        train=True
     )
     if opts.ratio == 0:
         logger.warning(
             "[Warning] The ratio of validation is 0. Use testset instead."
         )
-        testset = load_dataset(
+        validset = load_dataset(
             dataset_type=opts.dataset,
-            transform='null',
+            transforms="tensor,none",
             train=False
         )
-        cfg['validloader'] = load_dataloader(
-            dataset=testset,
-            batch_size=opts.batch_size,
-            train=False,
-            show_progress=opts.progress
-        )
+    cfg['trainloader'] = load_dataloader(
+        dataset=trainset,
+        batch_size=opts.batch_size,
+        train=True,
+        show_progress=opts.progress
+    )
+    cfg['validloader'] = load_dataloader(
+        dataset=validset,
+        batch_size=opts.batch_size,
+        train=False,
+        show_progress=opts.progress
+    )
 
     # load the optimizer and learning_policy
     optimizer = load_optimizer(

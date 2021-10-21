@@ -23,8 +23,10 @@ parser.add_argument("--filename", type=str, default=SAVED_FILENAME)
 parser.add_argument("--norm", choices=("Linf", "L2"), default="Linf")
 parser.add_argument("--epsilon", type=float, default=8/255)
 parser.add_argument("--version", choices=("standard", "plus"), default="standard")
-parser.add_argument("-b", "--batch_size", type=int, default=256)
 
+# basic settings
+parser.add_argument("-b", "--batch_size", type=int, default=256)
+parser.add_argument("--transform", type=str, default='tensor,none')
 parser.add_argument("--log2file", action="store_false", default=True,
                 help="False: remove file handler")
 parser.add_argument("--log2console", action="store_false", default=True,
@@ -70,7 +72,7 @@ def load_cfg() -> Tuple[Config, str]:
     # load the testset
     testset = load_dataset(
         dataset_type=opts.dataset, 
-        transform='null',
+        transforms=opts.transform,
         train=False
     )
     data = []

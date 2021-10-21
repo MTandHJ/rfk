@@ -141,20 +141,8 @@ def _get_normalizer(dataset_type: str) -> _Normalize:
     return _Normalize(mean, std)
 
 
-def _get_transform(
-    dataset_type: str, 
-    transform: str, 
-    train: bool = True
-) -> "augmentation":
-    if train:
-        return TRANSFORMS[dataset_type][transform]
-    else:
-        return T.ToTensor()
-
-
 def _dataset(
     dataset_type: str, 
-    transform: str,  
     train: bool = True
 ) -> torch.utils.data.Dataset:
     """
@@ -163,36 +151,30 @@ def _dataset(
     fashionmnist: FashionMNIST
     cifar10: CIFAR-10
     cifar100: CIFAR-100
-    Transform:
-    default: the default transform for each data set
-    simclr: the transform introduced in SimCLR
     """
-    try:
-        transform = _get_transform(dataset_type, transform, train)
-    except KeyError:
-        raise DatasetNotIncludeError(f"Dataset {dataset_type} or transform {transform} is not included.\n" \
-                        f"Refer to the following: {_dataset.__doc__}")
-
     if dataset_type == "mnist":
         dataset = torchvision.datasets.MNIST(
             root=ROOT, train=train, download=False,
-            transform=transform
+            transform=None
         )
     elif dataset_type == "fashionmnist":
         dataset = torchvision.datasets.FashionMNIST(
             root=ROOT, train=train, download=False,
-            transform=transform
+            transform=None
         )
     elif dataset_type == "cifar10":
         dataset = torchvision.datasets.CIFAR10(
             root=ROOT, train=train, download=False,
-            transform=transform
+            transform=None
         )
     elif dataset_type == "cifar100":
         dataset = torchvision.datasets.CIFAR100(
             root=ROOT, train=train, download=False,
-            transform=transform
+            transform=None
         )
+    else:
+        raise DatasetNotIncludeError("Dataset {0} is not included." \
+                        "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
         
     return dataset
 
@@ -202,13 +184,45 @@ def load_normalizer(dataset_type: str) -> _Normalize:
     return normalizer
 
 
+def _split_dataset(
+    dataset: torch.utils.data.Dataset,
+    ratio: float = .1, seed: int = VALIDSEED,
+    shuffle: bool = True
+) -> Tuple[torch.utils.data.Dataset]:
+    from torch.utils.data import Subset
+    datasize = len(dataset)
+    indices = list(range(datasize))
+    if shuffle:
+        np.random.seed(seed)
+        np.random.shuffle(indices)
+    validsize = int(ratio * datasize)
+    getLogger().info(f"[Dataset] Split the dataset into trainset({datasize-validsize}) and validset({validsize}) ...")
+    train_indices, valid_indices = indices[validsize:], indices[:validsize]
+    trainset = Subset(dataset, train_indices)
+    validset = Subset(dataset, valid_indices)
+    return trainset, validset
+
 def load_dataset(
     dataset_type: str, 
-    transform: str ='default', 
+    transforms: str ='default', 
+    ratio: float = 0.1,
+    seed: int = VALIDSEED,
+    shuffle: bool = True,
     train: bool = True
 ) -> torch.utils.data.Dataset:
-    dataset = _dataset(dataset_type, transform, train)
-    return dataset
+    from .datasets import WrapperSet
+    dataset = _dataset(dataset_type, train)
+    if train:
+        transforms = TRANSFORMS[dataset_type] if transforms == 'default' else transforms
+        getLogger().info(f"[Dataset] Apply transforms of '{transforms}' to trainset ...")
+        trainset, validset = _split_dataset(dataset, ratio, seed, shuffle)
+        trainset = WrapperSet(trainset, transforms=transforms)
+        validset = WrapperSet(validset, transforms=TRANSFORMS['validation'])
+        return trainset, validset
+    else:
+        getLogger().info(f"[Dataset] Apply transforms of '{transforms}' to testset ...")
+        testset = WrapperSet(dataset, transforms=transforms)
+        return testset
 
 
 class _TQDMDataLoader(torch.utils.data.DataLoader):
@@ -220,48 +234,25 @@ class _TQDMDataLoader(torch.utils.data.DataLoader):
             )
         )
 
-def _get_sampler(
-    dataset: torch.utils.data.Dataset,
-    ratio: float = .1, seed: int = VALIDSEED,
-    shuffle: bool = True
-) -> torch.utils.data.SubsetRandomSampler:
-    datasize = len(dataset)
-    indices = list(range(datasize))
-    if shuffle:
-        np.random.seed(seed)
-        np.random.shuffle(indices)
-    validsize = int(ratio * datasize)
-    train_indices, valid_indices = indices[validsize:], indices[:validsize]
-    trainsampler = torch.utils.data.SubsetRandomSampler(train_indices)
-    validsampler = torch.utils.data.SubsetRandomSampler(valid_indices)
-    return trainsampler, validsampler
-
 def load_dataloader(
     dataset: torch.utils.data.Dataset, 
     batch_size: int, 
     train: bool = True, 
-    ratio: float = .1, seed: int = VALIDSEED,
     show_progress: bool = False
 ) -> torch.utils.data.DataLoader:
 
     dataloader = _TQDMDataLoader if show_progress else torch.utils.data.DataLoader
     if train:
-        trainsampler, validsampler = _get_sampler(dataset, ratio=ratio, seed=seed, shuffle=True)
-        trainloader = dataloader(
-            dataset, batch_size=batch_size, sampler=trainsampler,
+        loader = dataloader(
+            dataset, batch_size=batch_size, shuffle=True,
             num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
         )
-        validloader = dataloader(
-            dataset, batch_size=batch_size, sampler=validsampler,
-            num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
-        )
-        return trainloader, validloader
     else:
-        testloader = dataloader(
+        loader = dataloader(
             dataset, batch_size=batch_size, shuffle=False,
             num_workers=NUM_WORKERS, pin_memory=PIN_MEMORY
         )
-        return testloader
+    return loader
 
 
 def load_optimizer(
