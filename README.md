@@ -1,7 +1,6 @@
 
 
 
-The corresponding trained models could be downloaded [here](https://zenodo.org/record/4669899#.YG2pec_isdU).
 
 ## Usage
 
@@ -10,26 +9,27 @@ The corresponding trained models could be downloaded [here](https://zenodo.org/r
 ```
 ┌── data # the path of data
 │	├── mnist
-│	└──cifar10
+│	├── fashionmnist
+│	├── svhn
+│	├── cifar10
+│	└── cifar100
 └── rfk
-	├── freeplot # for saving image
+	├── autoattack # AutoAttack
 	├── infos # for saving trained model
-	├── logs # logging the curve of loss, accuracy, robutness
+	├── logs # for logging
 	├── models # Architectures
 	├── src
 		├── attacks.py # 
 		├── base.py # Coach, arranging the training procdure
 		├── config.py # You can specify the ROOT as the path of training data.
 		├── criteria.py # useful criteria of foolbox
+		├── datasets.py # 
 		├── dict2obj.py #
 		├── loadopts.py # for loading basic configs
 		├── loss_zoo.py # The implementations of loss function ...
 		└── utils.py # other usful tools
-	├── AT.py # adversarial training, Madry A.
 	├── auto_attack.py # Croce F.
 	├── requirements.txt # requiresments of packages
-	├── STD.py # standing training
-	├── TRADES.py # TRADES, Zhang H.
 	├── transfer_attack.py #
 	└── white_box_attack.py # the white-box attacks due to foolbox
 ```
