@@ -159,24 +159,24 @@ def _dataset(
     """
     if dataset_type == "mnist":
         dataset = torchvision.datasets.MNIST(
-            root=ROOT, train=train, download=False
+            root=ROOT, train=train, download=DOWNLOAD
         )
     elif dataset_type == "fashionmnist":
         dataset = torchvision.datasets.FashionMNIST(
-            root=ROOT, train=train, download=False
+            root=ROOT, train=train, download=DOWNLOAD
         )
     elif dataset_type == "svhn":
         split = 'train' if train else 'test'
         dataset = torchvision.datasets.SVHN(
-            root=ROOT, split=split, download=False
+            root=ROOT, split=split, download=DOWNLOAD
         )
     elif dataset_type == "cifar10":
         dataset = torchvision.datasets.CIFAR10(
-            root=ROOT, train=train, download=False
+            root=ROOT, train=train, download=DOWNLOAD
         )
     elif dataset_type == "cifar100":
         dataset = torchvision.datasets.CIFAR100(
-            root=ROOT, train=train, download=False,
+            root=ROOT, train=train, download=DOWNLOAD
         )
     else:
         raise DatasetNotIncludeError("Dataset {0} is not included." \

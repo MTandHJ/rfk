@@ -20,6 +20,7 @@ from .dict2obj import Config
 
 
 ROOT = "../data" # the path saving the data
+DOWNLOAD = False # whether to download the data
 SAVED_FILENAME = "paras.pt" # the filename of saved model paramters
 PRE_BESTNAT = "nat"
 PRE_BESTROB = "rob"
