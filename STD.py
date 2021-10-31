@@ -10,7 +10,7 @@ from src.utils import timemeter
 
 METHOD = "STD"
 SAVE_FREQ = 5
-FMT = "{description}={learning_policy}-{optimizer}-{lr}" \
+FMT = "{description}={learning_policy}-{optimizer}-{lr}-{weight_decay}" \
         "={batch_size}={transform}"
 
 parser = argparse.ArgumentParser()

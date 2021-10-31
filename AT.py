@@ -10,7 +10,7 @@ from src.utils import timemeter
 
 METHOD = "AT"
 SAVE_FREQ = 5
-FMT = "{description}={learning_policy}-{optimizer}-{lr}" \
+FMT = "{description}={learning_policy}-{optimizer}-{lr}-{weight_decay}" \
         "={attack}-{epsilon:.4f}-{stepsize}-{steps}" \
         "={batch_size}={transform}"
 
