@@ -128,22 +128,11 @@ def main(attacker, testloader, log_path):
             running_distance_l2[epsilon] += distance_lp(inputs_, clipped_, p=2, dim=dim_).sum().item()
 
     datasize = len(testloader.dataset)
-    head = "-".join(map(str, (opts.attack, opts.epsilon_min, opts.epsilon_max, 
-                        opts.epsilon_times, opts.stepsize, opts.steps)))
     for epsilon in range(opts.epsilon_times):
         running_distance_linf[epsilon] /= running_success[epsilon]
         running_distance_l2[epsilon] /= running_success[epsilon]
         running_success[epsilon] /= datasize
 
-        # writter.add_scalar(head+"Success", running_success[epsilon], epsilon)
-        # writter.add_scalars(
-        #     head+"Distance", 
-        #     {
-        #         "Linf": running_distance_linf[epsilon],
-        #         "L2": running_distance_l2[epsilon],
-        #     },
-        #     epsilon
-        # )
     running_accuracy = list(map(lambda x: 1. - x, running_success))
 
     running_accuracy = ', '.join([f"{acc:.3%}" for acc in running_accuracy])
@@ -156,15 +145,12 @@ def main(attacker, testloader, log_path):
    
 
 if __name__ == "__main__":
-    from torch.utils.tensorboard import SummaryWriter
     from src.utils import readme
     cfg = load_cfg()
     readme(cfg.log_path, opts, mode="a")
-    writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
 
     main(**cfg)
 
-    writter.close()
 
 
 

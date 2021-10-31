@@ -151,24 +151,19 @@ def main(defender, attacker, testloader, log_path):
     running_distance_l2 /= running_success
     running_success /= len(testloader.dataset)
 
-    results = "Success: {0:.5f}, Linf: {1:.5f}, L2: {2:.5f}".format(
+    results = "Success: {0:.3%}, Linf: {1:.5f}, L2: {2:.5f}".format(
         running_success, running_distance_linf, running_distance_l2
     )
-    head = "-".join(map(str, (opts.attack, opts.epsilon, opts.stepsize, opts.steps)))
-    writter.add_text(head, results)
     logger.info(results)
 
 
 if __name__ == "__main__":
-    from torch.utils.tensorboard import SummaryWriter
     from src.utils import readme
     cfg = load_cfg()
     readme(cfg.log_path, opts, mode="a")
-    writter = SummaryWriter(log_dir=cfg.log_path, filename_suffix=METHOD)
 
     main(**cfg)
 
-    writter.close()
 
 
 
