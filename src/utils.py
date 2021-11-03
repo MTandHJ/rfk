@@ -17,6 +17,7 @@ import copy
 import pickle
 
 from .config import SAVED_FILENAME, LOGGER
+from models.base import DataParallel
 
 
 
@@ -165,15 +166,16 @@ class ImageMeter:
 
 
 
-def gpu(*models: nn.Module) -> torch.device:
+def gpu(*models: nn.Module) -> List[torch.device, nn.Module]:
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return_ = [device]
     for model in models:
         if torch.cuda.device_count() > 1:
-            model = nn.DataParallel(model)
+            return_.append(DataParallel(model))
         else:
-            model.to(device)
-    return device
+            return_.append(model.to(device))
+    return return_
 
 def mkdirs(*paths: str) -> None:
     for path in paths:
