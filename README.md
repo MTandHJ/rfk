@@ -41,22 +41,22 @@
 #### CIFAR-10
 
 
-    python STD.py resnet32 cifar10 -lp=STD --epochs=164 -wd=0.0002
-    python AT.py resnet32 cifar10 -lp=AT --epochs=200 -wd=0.0002
-    python ALP.py resnet32 cifar10 -lp=AT --epochs=200 -wd=0.0002 --leverage=0.5
-    python TRADES.py resnet32 cifar10 -lp=TRADES --epochs=76 -wd=0.0002 --leverage=6
+    python STD.py resnet18 cifar10 -lp=STD --epochs=164 -wd=0.0002
+    python AT.py resnet18 cifar10 -lp=AT --epochs=200 -wd=0.0002
+    python ALP.py resnet18 cifar10 -lp=AT --epochs=200 -wd=0.0002 --leverage=0.5
+    python TRADES.py resnet18 cifar10 -lp=TRADES --epochs=76 -wd=0.0002 --leverage=6
 
 In particular,
 
     python STD.py wrn_28_10 cifar10 -lp=STD-wrn --epochs=200 -wd=5e-4
 
-when applying Wide ResNet.
+when training Wide ResNet.
 
 Early stopping against over-fitting:
 
 ```
-python AT.py resnet32 cifar10 -lp=default --epochs=110 -wd=0.0005
-python TRADES.py resnet32 cifar10 -lp=default --epochs=110 -wd=0.0005
+python AT.py resnet18 cifar10 -lp=Pang2021ICLR --epochs=110 -wd=0.0005
+python TRADES.py resnet18 cifar10 -lp=Pang2021ICLR --epochs=110 -wd=0.0005
 ```
 
 
@@ -65,9 +65,9 @@ python TRADES.py resnet32 cifar10 -lp=default --epochs=110 -wd=0.0005
 
 ```
 python STD.py mnist mnist -lp=null --epochs=50 --optimizer=adam -lr=0.0001 -wd=0  -b=128
-python AT.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
-python ALP.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
-python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
+python AT.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.01
+python ALP.py mnist mnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.01
+python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.01 --leverage=1
 ```
 
 
@@ -78,9 +78,9 @@ python TRADES.py mnist mnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -
 
 ```
 python STD.py mnist fashionmnist -lp=null --epochs=50 --optimizer=adam -lr=0.0001 -wd=0  -b=128
-python AT.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333
-python ALP.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=0.5
-python TRADES.py mnist fashionmnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.0333333 --leverage=1
+python AT.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.01
+python ALP.py mnist fashionmnist -lp=null --epochs=84 -lr=0.0001 -wd=0 -mom=0 --optimizer=adam -b=50 --epsilon=0.3 --steps=40 --stepsize=0.01 --leverage=0.5
+python TRADES.py mnist fashionmnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mom=0.9 -b=128 --epsilon=0.3 --steps=40 --stepsize=0.01 --leverage=1
 ```
 
 
@@ -90,21 +90,21 @@ python TRADES.py mnist fashionmnist -lp=TRADES-M --epochs=100 -lr=0.01 -wd=0 -mo
 ### Evaluation
 
 
+
+
 Set the saved path as SP.
 
-    python white_box_attack.py resnet32 cifar10 SP --attack=pgd-linf --epsilon_min=0 --epsilon_max=1 --epsilon_times=20
-    python transfer_attack.py resnet32 SP1 resnet32 SP2 cifar10
-    python auto_attack.py resnet32 cifar10 SP --norm=Linf --version=standard
+    python white_box_attack.py resnet18 cifar10 SP --attack=pgd-linf --epsilon_min=0 --epsilon_max=1 --epsilon_times=20
+    python transfer_attack.py resnet18 SP1 resnet32 SP2 cifar10
+    python auto_attack.py resnet18 cifar10 SP --norm=Linf --version=standard
 
 
+
+**Note:** The stepsize in white_box_attack.py denotes the relative stepsize !
 
 
 
 ## Settings
-
-
-
-Note that the first two events stepsize and steps are the actual options for the evaluation while the next events is the real meaning of stepsize.
 
 
 
@@ -114,17 +114,15 @@ Note that the first two events stepsize and steps are the actual options for the
 
 
 
-$\epsilon=16/255$ is also a usual choice.
-
-|                  | PGD-10 | PGD-20 | PGD-40 |  AA  | DeepFool |  BBA  | FGSM |
-| :--------------: | :----: | :----: | :----: | :--: | :------: | :---: | :--: |
-|     stepsize     |  0.25  |  0.1   |  0.1   |  -   |   0.02   | 0.001 |  -   |
-|      steps       |   10   |   20   |   40   |  -   |    50    | 1000  |  -   |
-|   rel_stepsize   |  0.25  |  0.1   |  0.1   |  -   |    -     |   -   |  -   |
-|   abs_stepsize   | 2/255  | 0.0031 | 0.0031 |  -   |    -     |   -   |  -   |
-| initial_stepsize |   -    |   -    |   -    |  -   |    -     |   -   |  -   |
-|    overshoot     |   -    |   -    |   -    |  -   |   0.02   |   -   |  -   |
-|        lr        |   -    |   -    |   -    |  -   |    -     | 0.001 |  -   |
+|                  | FGSM | PGD-10 | PGD-20 | PGD-40 | DeepFool |  AA  |
+| :--------------: | :--: | :----: | :----: | :----: | :------: | :--: |
+|     stepsize     |  -   |  0.25  |  0.25  |  0.1   |   0.02   |  -   |
+|      steps       |  -   |   10   |   20   |   40   |    50    |  -   |
+|   rel_stepsize   |  -   |  0.25  |  0.1   |  0.1   |    -     |  -   |
+|   abs_stepsize   |  -   | 2/255  | 2/255  | 0.0031 |    -     |  -   |
+| initial_stepsize |  -   |   -    |   -    |   -    |    -     |  -   |
+|    overshoot     |  -   |   -    |   -    |   -    |   0.02   |  -   |
+|        lr        |  -   |   -    |   -    |   -    |    -     |  -   |
 
 
 
@@ -132,15 +130,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  | PGD-50 |  AA  | DeepFool |  BBA  | C&W  |
-| :--------------: | :----: | :--: | :------: | :---: | :--: |
-|     stepsize     |  0.1   |  -   |   0.02   | 0.001 | 0.01 |
-|      steps       |   50   |  -   |    50    | 1000  | 1000 |
-|   rel_stepsize   |  0.1   |  -   |    -     |   -   |  -   |
-|   abs_stepsize   |  0.05  |  -   |    -     |   -   |  -   |
-| initial_stepsize |   -    |  -   |    -     |   -   |  -   |
-|    overshoot     |   -    |  -   |   0.02   |   -   |  -   |
-|        lr        |   -    |  -   |    -     | 0.001 | 0.01 |
+|                  | PGD-50 | DeepFool | C&W  |  AA  |
+| :--------------: | :----: | :------: | :--: | :--: |
+|     stepsize     |  0.1   |   0.02   | 0.01 |  -   |
+|      steps       |   50   |    50    | 1000 |  -   |
+|   rel_stepsize   |  0.1   |    -     |  -   |  -   |
+|   abs_stepsize   |  0.05  |    -     |  -   |  -   |
+| initial_stepsize |   -    |    -     |  -   |  -   |
+|    overshoot     |   -    |   0.02   |  -   |  -   |
+|        lr        |   -    |    -     | 0.01 |  -   |
 
 
 
@@ -148,15 +146,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  | PGD-50 | Sparse |  BBA  |
-| :--------------: | :----: | :----: | :---: |
-|     stepsize     |  0.05  |  0.05  | 0.001 |
-|      steps       |   50   |   50   | 1000  |
-|   rel_stepsize   |  0.05  |  0.05  |   -   |
-|   abs_stepsize   |  0.6   |  0.6   |   -   |
-| initial_stepsize |   -    |   -    |   -   |
-|    overshoot     |   -    |   -    |   -   |
-|        lr        |   -    |   -    | 0.001 |
+|                  | PGD-50 | Sparse |
+| :--------------: | :----: | :----: |
+|     stepsize     |  0.05  |  0.05  |
+|      steps       |   50   |   50   |
+|   rel_stepsize   |  0.05  |  0.05  |
+|   abs_stepsize   |  0.6   |  0.6   |
+| initial_stepsize |   -    |   -    |
+|    overshoot     |   -    |   -    |
+|        lr        |   -    |   -    |
 
 
 
@@ -166,15 +164,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  |  PGD-50  | PGD-100  |  AA  | DeepFool |  BBA  | FGSM |
-| :--------------: | :------: | :------: | :--: | :------: | :---: | :--: |
-|     stepsize     | 0.033333 | 0.033333 |  -   |   0.02   | 0.001 |  -   |
-|      steps       |    50    |   100    |  -   |    50    | 1000  |  -   |
-|   rel_stepsize   | 0.033333 | 0.033333 |  -   |    -     |   -   |  -   |
-|   abs_stepsize   |   0.01   |   0.01   |  -   |    -     |   -   |  -   |
-| initial_stepsize |    -     |    -     |  -   |    -     |   -   |  -   |
-|    overshoot     |    -     |    -     |  -   |   0.02   |   -   |  -   |
-|        lr        |    -     |    -     |  -   |    -     | 0.001 |  -   |
+|                  | FGSM |  PGD-50  | PGD-100  | DeepFool |  AA  |
+| :--------------: | :--: | :------: | :------: | :------: | :--: |
+|     stepsize     |  -   | 0.033333 | 0.033333 |   0.02   |  -   |
+|      steps       |  -   |    50    |   100    |    50    |  -   |
+|   rel_stepsize   |  -   | 0.033333 | 0.033333 |    -     |  -   |
+|   abs_stepsize   |  -   |   0.01   |   0.01   |    -     |  -   |
+| initial_stepsize |  -   |    -     |    -     |    -     |  -   |
+|    overshoot     |  -   |    -     |    -     |   0.02   |  -   |
+|        lr        |  -   |    -     |    -     |    -     |  -   |
 
 
 
@@ -182,15 +180,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  | PGD-100 |  AA  | DeepFool |  BBA  | C&W  |
-| :--------------: | :-----: | :--: | :------: | :---: | :--: |
-|     stepsize     |  0.05   |  -   |   0.02   | 0.001 | 0.01 |
-|      steps       |   100   |  -   |    50    | 1000  | 1000 |
-|   rel_stepsize   |  0.05   |  -   |    -     |   -   |  -   |
-|   abs_stepsize   |   0.1   |  -   |    -     |   -   |  -   |
-| initial_stepsize |    -    |  -   |    -     |   -   |  -   |
-|    overshoot     |    -    |  -   |   0.02   |   -   |  -   |
-|        lr        |    -    |  -   |    -     | 0.001 | 0.01 |
+|                  | PGD-100 | DeepFool | C&W  |  AA  |
+| :--------------: | :-----: | :------: | :--: | :--: |
+|     stepsize     |  0.05   |   0.02   | 0.01 |  -   |
+|      steps       |   100   |    50    | 1000 |  -   |
+|   rel_stepsize   |  0.05   |    -     |  -   |  -   |
+|   abs_stepsize   |   0.1   |    -     |  -   |  -   |
+| initial_stepsize |    -    |    -     |  -   |  -   |
+|    overshoot     |    -    |   0.02   |  -   |  -   |
+|        lr        |    -    |    -     | 0.01 |  -   |
 
 
 
@@ -198,15 +196,15 @@ $\epsilon=16/255$ is also a usual choice.
 
 
 
-|                  | PGD-50 | SLIDE |  BBA  |
-| :--------------: | :----: | :---: | :---: |
-|     stepsize     |  0.05  | 0.05  | 0.001 |
-|      steps       |   50   |  50   | 1000  |
-|   rel_stepsize   |  0.05  | 0.05  |   -   |
-|   abs_stepsize   |  0.5   |  0.5  |   -   |
-| initial_stepsize |   -    |   -   |   -   |
-|    overshoot     |   -    |   -   |   -   |
-|        lr        |   -    |   -   | 0.001 |
+|                  | PGD-50 | SLIDE |
+| :--------------: | :----: | :---: |
+|     stepsize     |  0.05  | 0.05  |
+|      steps       |   50   |  50   |
+|   rel_stepsize   |  0.05  | 0.05  |
+|   abs_stepsize   |  0.5   |  0.5  |
+| initial_stepsize |   -    |   -   |
+|    overshoot     |   -    |   -   |
+|        lr        |   -    |   -   |
 
 
 

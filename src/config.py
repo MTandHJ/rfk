@@ -93,22 +93,30 @@ OPTIMS = {
 }
 
 
-# the learning schedular can be added here
+# the learning schedule can be added here
 LEARNING_POLICY = {
-   "default": (
-        "MultiStepLR",
-        Config(
-            milestones=[100, 105],
-            gamma=0.1,
-            prefix="Default leaning policy will be applied:"
-        )
-    ),
     "null": (
         "StepLR",
         Config(
             step_size=9999999999999,
             gamma=1,
             prefix="Null leaning policy will be applied:"
+        )
+    ),
+   "Pang2021ICLR": (
+        "MultiStepLR",
+        Config(
+            milestones=[100, 105],
+            gamma=0.1,
+            prefix="Pang2020ICLR leaning policy will be applied:"
+        )
+    ),
+    "Rice2020ICML": (
+        "MultiStepLR",
+        Config(
+            milestones=[100, 150],
+            gamma=0.1,
+            prefix="Rice2020ICML leaning policy will be applied:"
         )
     ),
     "STD": (
@@ -148,7 +156,7 @@ LEARNING_POLICY = {
         Config(
             milestones=[55, 75, 90],
             gamma=0.1,
-            prefix="TRADES learning policy, an official config for MNIST:"
+            prefix="TRADES-M learning policy, an official config for MNIST:"
         )
     ),
     "cosine":(   

@@ -104,7 +104,7 @@ def load_cfg() -> Tuple[Config, str]:
     )
     if opts.ratio == 0:
         logger.warning(
-            "[Warning] The ratio of validation is 0. Use testset instead."
+            "[Warning] The ratio of the validation set is 0. Use testset instead."
         )
         validset = load_dataset(
             dataset_type=opts.dataset,

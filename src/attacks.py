@@ -106,7 +106,7 @@ class L2PGD(BasePGD):
 class LinfPGDKLdiv(LinfPGD):
 
     def get_random_start(self, x: torch.Tensor):
-        delta = torch.randn_like(x) * 0.001
+        delta = torch.randn_like(x) * 0.001 # TRADES adopts normal distribution
         return x + delta
 
     def loss_fn(self, logits: torch.Tensor, targets: torch.Tensor):
@@ -136,8 +136,45 @@ class LinfPGDKLdiv(LinfPGD):
 
 class L2PGDKLdiv(L2PGD):
 
+    def get_random_start(self, x: torch.Tensor):
+        delta = torch.randn_like(x.flatten(1)) * 0.001
+        n = delta.norm(p=2, dim=1)
+        n = self.atleast_kd(n, x.ndim)
+        r = 1. # r = 1 for some implementations
+        delta *= r / n * self.epsilon
+        return x + delta
+
+    def normalize(self, adv: torch.Tensor, grad: torch.Tensor):
+        norms = grad.flatten(1).norm(p=2, dim=1)
+        norms = self.atleast_kd(norms, grad.ndim)
+        grad /= norms
+        if (norms == 0).any():
+            grad[norms == 0].normal_()
+        return adv + self.stepsize * grad
+
     def loss_fn(self, logits: torch.Tensor, targets: torch.Tensor):
         return kl_divergence(logits, targets, reduction='sum')
+
+    def attack(
+        self, model: nn.Module, 
+        inputs: torch.Tensor, targets: torch.Tensor
+    ) -> Tuple[torch.Tensor]:
+
+        x = inputs.clone()
+        if self.random_start:
+            x = self.get_random_start(x)
+            # TRADES excludes the clip operation at first
+            # x = torch.clamp(x, *self.bounds) 
+
+        for _ in range(self.steps):
+            x.requires_grad_(True)
+            logits = model(x)
+            loss = self.loss_fn(logits, targets)
+            grad = torch.autograd.grad(loss, x)[0].detach()
+            x = self.normalize(x.detach(), grad)
+            x = self.project(x, inputs)
+            x = torch.clamp(x, *self.bounds)
+        return x.detach()
 
 
 
