@@ -8,7 +8,6 @@ import foolbox as fb
 import os
 
 from models.base import AdversarialDefensiveModule
-from .criteria import LogitsAllFalse
 from .utils import AverageMeter, ProgressMeter, timemeter, getLogger
 from .loss_zoo import cross_entropy, kl_divergence, lploss
 from .config import SAVED_FILENAME, PRE_BESTNAT, PRE_BESTROB, \
@@ -149,7 +148,7 @@ class Coach:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
 
-            _, clipped, _ = attacker(inputs, labels)
+            clipped = attacker(inputs, labels)
 
             self.model.train()
             logits_nat = self.model(inputs)
@@ -188,8 +187,7 @@ class Coach:
             with torch.no_grad():
                 self.model.eval()
                 logits = self.model(inputs).detach()
-            criterion = LogitsAllFalse(logits) # perturbed by kl loss
-            _, inputs_adv, _ = attacker(inputs, criterion)
+            inputs_adv = attacker(inputs, logits)
             
             self.model.train()
             logits_nat = self.model(inputs)

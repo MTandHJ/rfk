@@ -66,7 +66,7 @@ class ADArch(AdversarialDefensiveModule):
 
     def __call__(self, inputs: torch.Tensor, **kwargs: Any) -> Any:
         inputs = self._normalize(inputs)
-        return super().__call__(inputs, **kwargs)
+        return  self.model(inputs, **kwargs)
 
 
 

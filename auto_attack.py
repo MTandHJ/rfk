@@ -5,6 +5,7 @@ import torch
 import argparse
 from src.loadopts import *
 from src.config import SAVED_FILENAME, DEVICE
+from src.utils import timemeter
 from autoattack import AutoAttack
 
 
@@ -37,7 +38,7 @@ opts = parser.parse_args()
 opts.description = FMT.format(**opts.__dict__)
 
 
-
+@timemeter("Setup")
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.utils import load, set_seed, set_logger
@@ -97,6 +98,7 @@ def load_cfg() -> Tuple[Config, str]:
     return cfg, log_path
 
 
+@timemeter('Main')
 def main(attacker, data, targets):
     attacker.run_standard_evaluation(data, targets, bs=opts.batch_size)
 
