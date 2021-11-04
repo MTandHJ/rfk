@@ -20,11 +20,9 @@ parser.add_argument("dataset", type=str)
 
 # adversarial training settings
 parser.add_argument("--leverage", type=float, default=6.)
-parser.add_argument("--attack", choices=("pgd-kl", ), default="pgd-kl", 
-                    help="no other choice for Trades")
+parser.add_argument("--attack", type=str, default="pgd-linf-kl")
 parser.add_argument("--epsilon", type=float, default=8/255)
-parser.add_argument("--stepsize", type=float, default=0.25, 
-                    help="pgd:rel_stepsize, cwl2:step_size, deepfool:overshoot, bb:lr")
+parser.add_argument("--stepsize", type=float, default=0.007)
 parser.add_argument("--steps", type=int, default=10)
 
 # basic settings
@@ -73,7 +71,8 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach, AdversaryForTrain
-    from src.utils import gpu, set_seed, load_checkpoint, set_logger
+    from src.utils import set_seed, load_checkpoint, set_logger
+    from models.base import ADArch
 
     cfg = Config()
    
@@ -93,8 +92,8 @@ def load_cfg() -> Tuple[Config, str]:
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
-    model.set_normalizer(load_normalizer(opts.dataset))
-    device, model = gpu(model)
+    mean, std = load_normalizer(opts.dataset)
+    model = ADArch(model=model, mean=mean, std=std)
 
     # load the dataset
     trainset, validset = load_dataset(
@@ -146,7 +145,7 @@ def load_cfg() -> Tuple[Config, str]:
         cfg['start_epoch'] = 0
 
     cfg['coach'] = Coach(
-        model=model, device=device, 
+        model=model,
         loss_func=None, 
         optimizer=optimizer, 
         learning_policy=learning_policy
@@ -154,18 +153,15 @@ def load_cfg() -> Tuple[Config, str]:
 
     # set the attack
     attack = load_attack(
-        attack_type=opts.attack,
-        stepsize=opts.stepsize, 
-        steps=opts.steps
+        attack_type=opts.attack, epsilon=opts.epsilon,
+        steps=opts.steps, stepsize=opts.stepsize,
+        random_start=True
     )
-
     cfg['attacker'] = AdversaryForTrain(
-        model=model, attacker=attack, 
-        device=device, epsilon=opts.epsilon
+        model=model, attacker=attack
     )
-
     cfg['valider'] = load_valider(
-        model=model, device=device, dataset_type=opts.dataset
+        model=model, dataset_type=opts.dataset
     )
 
     return cfg

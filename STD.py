@@ -64,7 +64,8 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> Tuple[Config, str]:
     from src.dict2obj import Config
     from src.base import Coach
-    from src.utils import gpu, set_seed, load_checkpoint, set_logger
+    from src.utils import set_seed, load_checkpoint, set_logger
+    from models.base import ADArch
 
     cfg = Config()
     
@@ -84,8 +85,8 @@ def load_cfg() -> Tuple[Config, str]:
 
     # the model and other settings for training
     model = load_model(opts.model)(num_classes=get_num_classes(opts.dataset))
-    model.set_normalizer(load_normalizer(opts.dataset))
-    device, model = gpu(model)
+    mean, std = load_normalizer(opts.dataset)
+    model = ADArch(model=model, mean=mean, std=std)
 
     # load the dataset
     trainset, validset = load_dataset(
@@ -137,7 +138,7 @@ def load_cfg() -> Tuple[Config, str]:
         cfg['start_epoch'] = 0
 
     cfg['coach'] = Coach(
-        model=model, device=device, 
+        model=model,
         loss_func=load_loss_func(opts.loss), 
         optimizer=optimizer,
         learning_policy=learning_policy
@@ -145,8 +146,7 @@ def load_cfg() -> Tuple[Config, str]:
 
     # for validation
     cfg['valider'] = load_valider(
-        model=model, device=device, 
-        dataset_type=opts.dataset
+        model=model, dataset_type=opts.dataset
     )
     return cfg
 
