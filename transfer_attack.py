@@ -52,6 +52,7 @@ def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import FBDefense, FBAdversary
     from src.utils import load, set_seed, set_logger
+    from src.utils import set_seed, activate_benchmark, load, set_logger
     from models.base import ADArch
 
     cfg = Config()
@@ -71,6 +72,7 @@ def load_cfg() -> 'Config':
     logger.debug(f"source path: {opts.source_path}")
     logger.debug(f"target path: {opts.target_path}")
 
+    activate_benchmark(opts.benchmark)
     set_seed(opts.seed)
 
     # load the source_model

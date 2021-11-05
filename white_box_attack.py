@@ -49,7 +49,7 @@ opts.description = FMT.format(**opts.__dict__)
 def load_cfg() -> 'Config':
     from src.dict2obj import Config
     from src.base import  FBAdversary
-    from src.utils import load, set_seed, set_logger
+    from src.utils import set_seed, activate_benchmark, load, set_logger
     from models.base import ADArch
 
     cfg = Config()
@@ -67,6 +67,7 @@ def load_cfg() -> 'Config':
     )
     logger.debug(opts.info_path)
 
+    activate_benchmark(opts.benchmark)
     set_seed(opts.seed)
 
     # the model and other settings for training
