@@ -54,7 +54,7 @@ parser.add_argument("--log2file", action="store_false", default=True,
 parser.add_argument("--log2console", action="store_false", default=True,
                 help="False: remove console handler if log2file is True ...")
 parser.add_argument("--seed", type=int, default=1)
-parser.add_argument("--benchmark", action="store_false", default=True, 
+parser.add_argument("--benchmark", action="store_true", default=False, 
                 help="cudnn.benchmark == True ?")
 parser.add_argument("-m", "--description", type=str, default=METHOD)
 opts = parser.parse_args()
