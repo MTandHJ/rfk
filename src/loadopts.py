@@ -29,6 +29,8 @@ def get_num_classes(dataset_type: str) -> int:
         return 10
     elif dataset_type in ('cifar100', ):
         return 100
+    elif dataset_type in ('tinyimagenet', ):
+        return 200
     else:
         raise DatasetNotIncludeError("Dataset {0} is not included." \
                         "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
@@ -113,6 +115,7 @@ def _dataset(
     svhn: SVHN
     cifar10: CIFAR-10
     cifar100: CIFAR-100
+    tinyimagenet: Tiny ImageNet 200
     """
     if dataset_type == "mnist":
         dataset = torchvision.datasets.MNIST(
@@ -135,6 +138,10 @@ def _dataset(
         dataset = torchvision.datasets.CIFAR100(
             root=ROOT, train=train, download=DOWNLOAD
         )
+    elif dataset_type == "tinyimagenet":
+        from src.datasets import TinyImageNet
+        split = 'train' if train else 'val'
+        dataset = TinyImageNet(root=ROOT, split=split)
     else:
         raise DatasetNotIncludeError("Dataset {0} is not included." \
                         "Refer to the following: {1}".format(dataset_type, _dataset.__doc__))
