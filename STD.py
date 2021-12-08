@@ -154,19 +154,6 @@ def load_cfg() -> Tuple[Config, str]:
     return cfg
 
 
-@timemeter("Evaluation")
-def evaluate(
-    valider, dataloader, 
-    acc_logger, rob_logger, logger, 
-    prefix='Valid', epoch = 8888
-):
-    acc_nat, acc_adv = valider.evaluate(dataloader)
-    logger.info(f"{prefix} >>> [TA: {acc_nat:.3%}]    [RA: {acc_adv:.3%}]")
-    getattr(acc_logger, prefix.lower())(data=acc_nat, T=epoch)
-    getattr(rob_logger, prefix.lower())(data=acc_adv, T=epoch)
-    return acc_nat, acc_adv
-
-
 def preparation(valider):
     from src.utils import TrackMeter, ImageMeter, getLogger
     from src.dict2obj import Config
