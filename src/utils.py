@@ -209,39 +209,26 @@ def load(
     model.load_state_dict(state_dict, strict=strict)
     model.eval()
 
-# save the checkpoint
-def save_checkpoint(
-    path: str, 
-    model: nn.Module, 
-    optimizer: torch.optim.Optimizer, 
-    lr_scheduler: "learning rate policy",
-    epoch: int
-) -> None:
-    path = path + "/model-optim-lr_sch-epoch.tar"
-    torch.save(
-        {
-            "model": model.state_dict(),
-            "optimizer": optimizer.state_dict(),
-            "lr_scheduler": lr_scheduler.state_dict(),
-            "epoch": epoch
-        },
-        path
-    )
+
+def save_checkpoint(path: str, epoch: int, **kwargs) -> None:
+    path = os.path.join(path, "checkpoint.tar")
+    checkpoint = dict()
+    checkpoint['epoch'] = epoch
+    for key, module in kwargs.items():
+        checkpoint[key] = module.state_dict()
+    torch.save(checkpoint, path)
 
 # load the checkpoint
 def load_checkpoint(
-    path: str, 
-    model: nn.Module, 
-    optimizer: torch.optim.Optimizer, 
-    lr_scheduler: "learning rate policy"
+    path: str, **kwargs
 ) -> int:
-    path = path + "/model-optim-lr_sch-epoch.tar"
+    path = os.path.join(path, "checkpoint.tar")
     checkpoint = torch.load(path)
-    model.load_state_dict(checkpoint['model'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+    for key, module in kwargs.items():
+        module.load_state_dict(checkpoint[key])
     epoch = checkpoint['epoch']
     return epoch
+
 
 def export_pickle(data: Dict, file_: str) -> NoReturn:
     logger = getLogger()

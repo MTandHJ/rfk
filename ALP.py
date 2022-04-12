@@ -204,7 +204,7 @@ def main(
     coach, attacker, valider, 
     trainloader, validloader, start_epoch, 
     info_path, log_path
-):  
+):
 
     from src.utils import save_checkpoint
 
@@ -214,7 +214,10 @@ def main(
     for epoch in range(start_epoch, opts.epochs):
 
         if epoch % SAVE_FREQ == 0:
-            save_checkpoint(info_path, coach.model, coach.optimizer, coach.learning_policy, epoch)
+            save_checkpoint(
+                info_path, epoch, model=coach.model, 
+                optimizer=coach.optimizer, lr_scheduler=coach.learning_policy
+            )
 
         if epoch % opts.eval_freq == 0:
             if opts.eval_train:

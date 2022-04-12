@@ -196,7 +196,48 @@ def main(
     for epoch in range(start_epoch, opts.epochs):
 
         if epoch % SAVE_FREQ == 0:
-            save_checkpoint(info_path, coach.model, coach.optimizer, coach.learning_policy, epoch)
+            save_checkpoint(
+                info_path, epoch, model=coach.model, 
+                optimizer=coach.optimizer, lr_scheduler=coach.learning_policy
+            )
+
+        if epoch % opts.eval_freq == 0:
+            if opts.eval_train:
+                evaluate(trainloader, prefix='Train', epoch=epoch)
+            if opts.eval_valid:
+                acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
+                coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
+
+        running_loss = coach.adv_train(trainloader, attacker, epoch=epoch)
+
+    # save the model
+    coach.save(info_path)
+
+    # final evaluation
+    evaluate(trainloader, prefix='Train', epoch=opts.epochs)
+    acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=opts.epochs)
+    coach.check_best(acc_nat, acc_rob, info_path, epoch=opts.epochs) 
+
+    acc_logger.plotter.plot()
+    rob_logger.plotter.plot()
+    acc_logger.plotter.save(log_path)
+    rob_logger.plotter.save(log_path)
+
+
+
+
+if __name__ ==  "__main__":
+    from src.utils import readme
+    cfg = load_cfg()
+    opts.log_path = cfg.log_path
+    readme(cfg.info_path, opts)
+    readme(cfg.log_path, opts, mode="a")
+
+    main(**cfg)
+
+
+
+
 
         if epoch % opts.eval_freq == 0:
             if opts.eval_train:

@@ -225,8 +225,8 @@ class Adversary:
     def attack(self, inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
         raise NotImplementedError
 
-    def __call__(self, inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-        return self.attack(inputs, targets)
+    def __call__(self, *args, **kwargs) -> torch.Tensor:
+        return self.attack(*args, **kwargs)
 
 class AdversaryForTrain(Adversary):
 
