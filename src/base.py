@@ -222,16 +222,16 @@ class Adversary:
         self.attacker = attacker 
         self.device = device
 
-    def attack(self, inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def attack(self, inputs: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
         raise NotImplementedError
 
-    def __call__(self, *args, **kwargs) -> torch.Tensor:
-        return self.attack(*args, **kwargs)
+    def __call__(self, inputs: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
+        return self.attack(inputs, targets)
 
 class AdversaryForTrain(Adversary):
 
     @enter_attack_exit
-    def attack(self, inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def attack(self, inputs: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
         self.model.eval() # some methods require training mode
         return self.attacker(self.model, inputs, targets)
 

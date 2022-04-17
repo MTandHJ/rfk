@@ -1,6 +1,7 @@
 
 
-from typing import Optional, Tuple
+from ctypes import Union
+from typing import Iterable, Optional, Tuple
 import torch
 import torch.nn as nn
 
@@ -34,17 +35,17 @@ class BasePGD:
     def project(self, adv: torch.Tensor, source: torch.Tensor) -> torch.Tensor:
         raise NotImplementedError
 
-    def loss_fn(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def loss_fn(self, logits: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
         raise NotImplementedError
 
-    def calc_grad(self, model: nn.Module, x: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def calc_grad(self, model: nn.Module, x: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
         x = x.clone().requires_grad_(True)
         logits = model(x)
         loss = self.loss_fn(logits, targets)
         loss.backward()
         return x.grad
 
-    def attack(self, model: nn.Module, inputs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    def attack(self, model: nn.Module, inputs: torch.Tensor, targets: Union[Iterable, torch.Tensor]) -> torch.Tensor:
 
         x0 = inputs.clone()
 
