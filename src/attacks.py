@@ -1,7 +1,6 @@
 
 
-from ctypes import Union
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, Union
 import torch
 import torch.nn as nn
 
