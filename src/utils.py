@@ -154,7 +154,7 @@ class ImageMeter:
         for meter in self.meters:
             x = meter.timeline
             y = meter.history
-            self.fp.lineplot(x, y, label=meter.name, marker='')
+            self.fp.lineplot(x, y, label=meter.name, style='bright')
         self.fp.set_title(y=.98)
         self.fp[0, 0].legend()
     
