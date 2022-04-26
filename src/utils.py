@@ -163,6 +163,33 @@ class ImageMeter:
         _file = os.path.join(path, filename)
         self.fp.savefig(_file)
 
+
+
+class MultiImageMeter(ImageMeter):
+
+    def __init__(self, *meters: TrackMeter, title: str = "summary"):
+        super().__init__(*meters, title=title)
+
+    @property
+    def titles(self):
+        return [meter.name for meter in self.meters]
+
+    def plot(self) -> None:
+        self.fp = FreePlot(
+                shape=(1, len(self.meters)),
+                figsize=(2.2 * len(self.meters), 2),
+                titles=self.titles,
+                sharey=False,
+                dpi=200
+            )
+        self.fp.set_style('no-latex')
+        for i, meter in enumerate(self.meters):
+            x = meter.timeline
+            y = meter.history
+            self.fp.lineplot(x, y, label=meter.name, index=(0, i), style='bright')
+        self.fp.set_title(y=.98)
+    
+
 def mkdirs(*paths: str) -> None:
     for path in paths:
         try:

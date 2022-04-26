@@ -8,7 +8,8 @@ import foolbox as fb
 import os
 
 from models.base import AdversarialDefensiveModule
-from .utils import AverageMeter, ProgressMeter, timemeter, getLogger
+from .dict2obj import Config
+from .utils import AverageMeter, ProgressMeter, TrackMeter, MultiImageMeter, timemeter, getLogger
 from .loss_zoo import cross_entropy, kl_divergence, lploss, mse_loss
 from .config import SAVED_FILENAME, PRE_BESTNAT, PRE_BESTROB, \
                         BOUNDS, PREPROCESSING, DEVICE
@@ -39,12 +40,27 @@ class Coach:
         self.loss_func = loss_func
         self.optimizer = optimizer
         self.learning_policy = learning_policy
-        self.loss = AverageMeter("Loss")
-        self.acc = AverageMeter("Acc", fmt=".3%")
-        self.progress = ProgressMeter(self.loss, self.acc)
+
+        self.meter = Config(
+            loss=AverageMeter("Loss"),
+            acc=AverageMeter("Acc", fmt=".3%")
+        )
+        self.meter.progress = ProgressMeter(*self.meter.values())
+
+        self.logger = Config(
+            major=TrackMeter("Major Loss"),
+            minor=TrackMeter("Minor Loss")
+            # other ...
+        )
+        self.logger.plotter = MultiImageMeter(*self.logger.values(), title="summary")
 
         self._best_nat = 0.
         self._best_rob = 0.
+        self.steps = 0
+
+    def summary(self, log_path: str):
+        self.logger.plotter.plot()
+        self.logger.plotter.save(log_path)
 
     def save_best_nat(self, acc_nat: float, path: str, prefix: str = PRE_BESTNAT):
         if acc_nat > self._best_nat:
@@ -82,7 +98,7 @@ class Coach:
         *, epoch: int = 8888
     ) -> float:
 
-        self.progress.step() # reset the meter
+        self.meter.progress.step() # reset the meter
         self.model.train()
         for inputs, labels in trainloader:
             inputs = inputs.to(self.device)
@@ -97,12 +113,17 @@ class Coach:
             self.optimizer.step()
 
             accuracy_count = (outs.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0), mode="mean")
-            self.acc.update(accuracy_count, inputs.size(0), mode="sum")
+            self.meter.loss.update(loss.item(), inputs.size(0), mode="mean")
+            self.meter.acc.update(accuracy_count, inputs.size(0), mode="sum")
 
-        self.progress.display(epoch=epoch) 
+            # for summary
+            self.logger.major(data=loss.item(), T=self.steps)
+
+            self.steps += 1
+
+        self.meter.progress.display(epoch=epoch) 
         self.learning_policy.step() # update the learning rate
-        return self.loss.avg
+        return self.meter.loss.avg
 
     @timemeter("AdvTraining/Epoch")
     def adv_train(
@@ -112,7 +133,7 @@ class Coach:
         *, epoch: int = 8888
     ) -> float:
     
-        self.progress.step() # reset the meter
+        self.meter.progress.step() # reset the meter
         for inputs, labels in trainloader:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
@@ -128,12 +149,17 @@ class Coach:
             self.optimizer.step()
 
             accuracy_count = (outs.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0), mode="mean")
-            self.acc.update(accuracy_count, inputs.size(0), mode="sum")
+            self.meter.loss.update(loss.item(), inputs.size(0), mode="mean")
+            self.meter.acc.update(accuracy_count, inputs.size(0), mode="sum")
 
-        self.progress.display(epoch=epoch)
+            # for summary
+            self.logger.major(data=loss.item(), T=self.steps)
+
+            self.steps += 1
+
+        self.meter.progress.display(epoch=epoch)
         self.learning_policy.step() # update the learning rate
-        return self.loss.avg
+        return self.meter.loss.avg
 
     @timemeter("ALP/Epoch")
     def alp(
@@ -143,7 +169,7 @@ class Coach:
         *, leverage: float = .5, epoch: int = 8888
     ) -> float:
 
-        self.progress.step()
+        self.meter.progress.step()
         for inputs, labels in trainloader:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
@@ -163,13 +189,19 @@ class Coach:
             self.optimizer.step()
 
             acc_count = (logits_adv.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0), mode="mean")
-            self.acc.update(acc_count, inputs.size(0), mode="sum")
+            self.meter.loss.update(loss.item(), inputs.size(0), mode="mean")
+            self.meter.acc.update(acc_count, inputs.size(0), mode="sum")
 
-        self.progress.display(epoch=epoch)
+            # for summary
+            self.logger.major(data=loss_nat.item(), T=self.steps)
+            self.logger.minor(data=loss_adv.item(), T=self.steps)
+
+            self.steps += 1
+
+        self.meter.progress.display(epoch=epoch)
         self.learning_policy.step()
 
-        return self.loss.avg
+        return self.meter.loss.avg
 
     @timemeter("TRADES/Epoch")
     def trades(
@@ -179,7 +211,7 @@ class Coach:
         *, leverage: float = 6., epoch: int = 8888
     ) -> float:
 
-        self.progress.step()
+        self.meter.progress.step()
         for inputs, labels in trainloader:
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
@@ -201,13 +233,19 @@ class Coach:
             self.optimizer.step()
 
             acc_count = (logits_adv.argmax(-1) == labels).sum().item()
-            self.loss.update(loss.item(), inputs.size(0), mode="mean")
-            self.acc.update(acc_count, inputs.size(0), mode="sum")
+            self.meter.loss.update(loss.item(), inputs.size(0), mode="mean")
+            self.meter.acc.update(acc_count, inputs.size(0), mode="sum")
 
-        self.progress.display(epoch=epoch)
+            # for summary
+            self.logger.major(data=loss_nat.item(), T=self.steps)
+            self.logger.minor(data=loss_adv.item(), T=self.steps)
+
+            self.steps += 1
+
+        self.meter.progress.display(epoch=epoch)
         self.learning_policy.step()
 
-        return self.loss.avg
+        return self.meter.loss.avg
 
 
 class Adversary:

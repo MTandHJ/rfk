@@ -208,7 +208,8 @@ def main(
                 acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=epoch)
                 coach.check_best(acc_nat, acc_rob, info_path, epoch=epoch)
 
-        running_loss = coach.adv_train(trainloader, attacker, epoch=epoch)
+        running_loss = coach.train(trainloader, epoch=epoch)
+        coach.summary(log_path)
 
     # save the model
     coach.save(info_path)
@@ -218,6 +219,8 @@ def main(
     acc_nat, acc_rob = evaluate(validloader, prefix="Valid", epoch=opts.epochs)
     coach.check_best(acc_nat, acc_rob, info_path, epoch=opts.epochs) 
 
+
+    coach.summary(log_path)
     acc_logger.plotter.plot()
     rob_logger.plotter.plot()
     acc_logger.plotter.save(log_path)
