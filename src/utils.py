@@ -111,7 +111,7 @@ class TrackMeter:
         self.__timeline.append(T)
 
     def __call__(self, *, data: float, T: int) -> None:
-        self.track(data, T)
+        self.track(float(data), T)
 
 
 class ProgressMeter:
